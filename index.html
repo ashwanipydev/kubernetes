@@ -1,884 +1,1173 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kubernetes Learning Journey: From Zero to DevOps Hero</title>
+    <title>Kubernetes 12-Day Mastery Hub</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Inter', sans-serif; }
-        
-        /* Chart Container Styling - Mandatory Requirements */
-        .chart-container {
-            position: relative;
-            width: 100%;
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
-            height: 300px; /* Mobile base height */
-            max-height: 400px;
-        }
-        @media (min-width: 768px) {
-            .chart-container {
-                height: 350px; /* Tablet/Desktop height */
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        stone: {
+                            850: '#211f1d',
+                            950: '#0c0a09',
+                        }
+                    }
+                }
             }
         }
-        
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=JetBrains+Mono:wght@400;700&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .font-mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
         /* Custom Scrollbar */
         ::-webkit-scrollbar {
             width: 8px;
-            height: 8px;
         }
         ::-webkit-scrollbar-track {
-            background: #f1f5f9;
+            background: #e7e5e4; 
+        }
+        .dark ::-webkit-scrollbar-track {
+            background: #292524;
         }
         ::-webkit-scrollbar-thumb {
-            background: #94a3b8;
+            background: #a8a29e; 
             border-radius: 4px;
         }
         ::-webkit-scrollbar-thumb:hover {
-            background: #64748b;
+            background: #78716c; 
         }
 
-        /* Interactive Element Transitions */
-        .interactive-card {
-            transition: transform 0.2s, box-shadow 0.2s;
+        .chart-container {
+            position: relative;
+            width: 100%;
+            height: 300px;
         }
-        .interactive-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-        }
-
-        /* Active Navigation State */
-        .nav-item.active {
-            background-color: #eff6ff;
-            color: #2563eb;
-            border-right: 3px solid #2563eb;
-        }
-    </style>
-</head>
-<body class="bg-slate-50 text-slate-800 h-screen overflow-hidden flex flex-col">
-
-    <!-- Chosen Palette: Kubernetes Blue & Slate Neutral -->
-    <!-- 
-         Primary: #326CE5 (Kubernetes Blue) -> Tailwind blue-600
-         Background: #F8FAFC (Slate 50)
-         Text: #1E293B (Slate 800)
-         Accent: #0EA5E9 (Sky Blue)
-    -->
-
-    <!-- Application Structure Plan: 
-         - **Layout**: Dashboard style. Left sidebar for the 12-Day Timeline navigation. Main content area for dynamic day details.
-         - **Dashboard Home**: Overview of the 4 phases, total progress, and command proficiency stats (Chart.js).
-         - **Day View**: When a day is selected, the main area splits into tabs:
-           1. **Concepts**: Interactive diagrams (HTML/CSS) and theory.
-           2. **Command Lab**: List of specific kubectl commands for that day with copy functionality.
-           3. **Practice & Scenarios**: Checklists for hands-on tasks and interactive "Flip Cards" for Real-World Scenarios/Mistakes.
-         - **Interactivity**: Users can "Mark Complete" days to update the global progress chart. 
-         - **Rationale**: The 12-day plan is linear but complex. A dashboard allows users to jump between days while maintaining a sense of progression. Splitting content into tabs prevents information overload.
-    -->
-
-    <!-- Visualization & Content Choices:
-         - **Progress Ring (Dashboard)**: Chart.js Doughnut. Goal: Inform/Motivate. Shows % of plan completed.
-         - **Command Skill Distribution (Dashboard)**: Chart.js Bar. Goal: Compare. Shows count of Beginner vs Advanced commands learned.
-         - **Interactive Cards**: HTML/JS. Goal: Inform/Engage. Used for Common Mistakes and Scenarios to encourage active clicking.
-         - **Concept Blocks**: Styled Divs. Goal: Inform. Visualizing K8s Architecture using nested flexboxes (Node > Pod > Container).
-    -->
-
-    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
-
-    <!-- Header -->
-    <header class="bg-white border-b border-slate-200 h-16 flex items-center justify-between px-6 shrink-0 z-20 shadow-sm">
-        <div class="flex items-center gap-3">
-            <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-lg">K8</div>
-            <h1 class="text-xl font-bold tracking-tight text-slate-900">Kubernetes Hero Journey</h1>
-        </div>
-        <div class="flex items-center gap-4">
-            <span class="text-sm text-slate-500 hidden md:inline">12-Day Intensive Plan</span>
-            <button onclick="resetProgress()" class="text-xs text-red-500 hover:text-red-700 underline">Reset Progress</button>
-        </div>
-    </header>
-
-    <div class="flex flex-1 overflow-hidden">
-        <!-- Sidebar Navigation -->
-        <aside class="w-64 bg-white border-r border-slate-200 overflow-y-auto hidden md:block shrink-0 flex flex-col">
-            <div class="p-4">
-                <h2 class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Curriculum Timeline</h2>
-                <div id="nav-container" class="space-y-6">
-                    <!-- Navigation dynamically populated -->
-                </div>
-            </div>
-        </aside>
-
-        <!-- Main Content Area -->
-        <main id="main-content" class="flex-1 overflow-y-auto p-6 md:p-8 relative">
-            <!-- Content dynamically populated -->
-        </main>
-    </div>
-
-    <!-- Mobile Nav Toggle (Visible only on small screens) -->
-    <div class="md:hidden fixed bottom-4 right-4 z-50">
-        <button id="mobile-menu-btn" class="bg-blue-600 text-white p-3 rounded-full shadow-lg" onclick="toggleMobileNav()">
-            Menu
-        </button>
-    </div>
-    
-    <!-- Mobile Sidebar Modal -->
-    <div id="mobile-sidebar" class="fixed inset-0 bg-slate-900 bg-opacity-50 z-40 hidden" onclick="toggleMobileNav()">
-        <div class="bg-white w-64 h-full overflow-y-auto" onclick="event.stopPropagation()">
-            <div class="p-4 border-b">
-                <h2 class="font-bold text-lg">Navigation</h2>
-            </div>
-            <div id="mobile-nav-container" class="p-4 space-y-4">
-                <!-- Mobile Nav items -->
-            </div>
-        </div>
-    </div>
-
-    <!-- Data & Logic -->
-    <script>
-        // --- Source Data ---
-        const curriculum = {
-            overview: {
-                title: "Dashboard Overview",
-                description: "Track your progress from beginner to production-ready operations.",
-                phases: [
-                    { id: 1, title: "The Foundation", days: "1-3", color: "border-l-4 border-blue-500" },
-                    { id: 2, title: "Networking & Config", days: "4-6", color: "border-l-4 border-indigo-500" },
-                    { id: 3, title: "Advanced Workloads", days: "7-9", color: "border-l-4 border-purple-500" },
-                    { id: 4, title: "Production & Ops", days: "10-12", color: "border-l-4 border-emerald-500" }
-                ]
-            },
-            days: [
-                {
-                    day: 1,
-                    phase: 1,
-                    title: "Architecture & Cluster Setup",
-                    goal: "Understand K8s internals and verify cluster connectivity.",
-                    concepts: [
-                        { title: "Control Plane (Brain)", content: "Manages the cluster. Includes: API Server (Gatekeeper), etcd (Memory), Scheduler (Planner), Controller Manager." },
-                        { title: "Worker Nodes (Muscle)", content: "Runs applications. Includes: Kubelet (Agent), Kube-proxy (Network), Container Runtime (Docker)." },
-                        { title: "Declarative Model", content: "You tell K8s 'Desired State' (I want 3 pods), K8s works to match 'Current State' to it." }
-                    ],
-                    commands: [
-                        { cmd: "kubectl version", level: "Beginner", desc: "Check client and server version." },
-                        { cmd: "kubectl cluster-info", level: "Beginner", desc: "Verify control plane location." },
-                        { cmd: "kubectl get nodes", level: "Beginner", desc: "List worker nodes and status." },
-                        { cmd: "kubectl api-resources", level: "Advanced", desc: "List all available resource types." }
-                    ],
-                    practice: [
-                        "Install Minikube or Kind.",
-                        "Start the cluster.",
-                        "Run 'kubectl get nodes' to verify readiness.",
-                        "Inspect ~/.kube/config file."
-                    ],
-                    scenario: {
-                        problem: "You join a new company. They give you access to a cluster. What's the first step?",
-                        solution: "Verify connection using 'kubectl version' and check capacity with 'kubectl get nodes'."
-                    },
-                    mistakes: ["Confusing Client Version (laptop) with Server Version (cluster).", "Docker daemon not running before starting Minikube."]
-                },
-                {
-                    day: 2,
-                    phase: 1,
-                    title: "The Atom: Pods",
-                    goal: "Run your first containerized application.",
-                    concepts: [
-                        { title: "Pod", content: "Smallest deployable unit. Usually 1 container per pod." },
-                        { title: "YAML", content: "The configuration language of Kubernetes." },
-                        { title: "Lifecycle", content: "Pending -> Running -> Succeeded/Failed/CrashLoopBackOff." }
-                    ],
-                    commands: [
-                        { cmd: "kubectl run nginx --image=nginx", level: "Beginner", desc: "Imperatively start a pod." },
-                        { cmd: "kubectl get pods", level: "Beginner", desc: "List pods in current namespace." },
-                        { cmd: "kubectl get pods -o wide", level: "Intermediate", desc: "See IP and Node assignment." },
-                        { cmd: "kubectl describe pod <name>", level: "Beginner", desc: "Detailed inspection & events." },
-                        { cmd: "kubectl logs <name>", level: "Beginner", desc: "View application logs." },
-                        { cmd: "kubectl apply -f pod.yaml", level: "Beginner", desc: "Create from file." },
-                        { cmd: "kubectl delete -f pod.yaml", level: "Beginner", desc: "Delete from file." }
-                    ],
-                    practice: [
-                        "Create 'my-pod.yaml' for Nginx.",
-                        "Apply with 'kubectl apply -f'.",
-                        "Force failure (wrong image tag) and debug with 'describe'.",
-                        "View logs of running pod."
-                    ],
-                    scenario: {
-                        problem: "Developer says 'My app isn't starting'.",
-                        solution: "1. 'kubectl get pods' (Check status). 2. 'kubectl describe pod' (Check Events). 3. 'kubectl logs' (Check app output)."
-                    },
-                    mistakes: ["Using 'run' for production instead of YAML.", "Ignoring the 'Events' section in describe output."]
-                },
-                {
-                    day: 3,
-                    phase: 1,
-                    title: "Controllers: Deployments",
-                    goal: "Ensure high availability and manage updates.",
-                    concepts: [
-                        { title: "ReplicaSet", content: "Ensures X copies of a pod are running." },
-                        { title: "Deployment", content: "Manages ReplicaSets. Handles rolling updates and rollbacks." },
-                        { title: "Labels", content: "Key/Value pairs used to identify and select subsets of objects." }
-                    ],
-                    commands: [
-                        { cmd: "kubectl create deployment web --image=nginx --replicas=3", level: "Beginner", desc: "Create deployment." },
-                        { cmd: "kubectl scale deployment web --replicas=5", level: "Intermediate", desc: "Manually scale up." },
-                        { cmd: "kubectl rollout status deployment web", level: "Intermediate", desc: "Watch update progress." },
-                        { cmd: "kubectl rollout undo deployment web", level: "Intermediate", desc: "Revert bad update." }
-                    ],
-                    practice: [
-                        "Create deployment.yaml with 3 replicas.",
-                        "Delete a pod manually and watch it respawn.",
-                        "Update image to 'nginx:latest' and watch rollout.",
-                        "Rollback using 'undo'."
-                    ],
-                    scenario: {
-                        problem: "Deployed v2 but it has a critical bug. Downtime is expensive.",
-                        solution: "Immediately run 'kubectl rollout undo deployment <name>' to revert to v1."
-                    },
-                    mistakes: ["Editing pods directly instead of the Deployment.", "Not setting resource limits (hogging cluster RAM)."]
-                },
-                {
-                    day: 4,
-                    phase: 2,
-                    title: "Networking: Services",
-                    goal: "Expose your application to the network.",
-                    concepts: [
-                        { title: "ClusterIP", content: "Internal only. Default service type." },
-                        { title: "NodePort", content: "Exposes port on every worker node IP (Static port)." },
-                        { title: "LoadBalancer", content: "Uses Cloud Provider's LB (AWS/GCP/Azure)." }
-                    ],
-                    commands: [
-                        { cmd: "kubectl get svc", level: "Beginner", desc: "List services." },
-                        { cmd: "kubectl expose deployment web --port=80 --type=NodePort", level: "Intermediate", desc: "Expose via CLI." },
-                        { cmd: "kubectl port-forward svc/web 8080:80", level: "Intermediate", desc: "Access internal svc locally." }
-                    ],
-                    practice: [
-                        "Deploy backend app.",
-                        "Create ClusterIP service (try accessing -> fail).",
-                        "Use 'port-forward' to access it.",
-                        "Switch to NodePort and access via NodeIP."
-                    ],
-                    scenario: {
-                        problem: "Frontend needs to talk to Backend inside the cluster.",
-                        solution: "Create a Service for Backend. Frontend calls 'http://backend-service-name'."
-                    },
-                    mistakes: ["Confusing Port (Service) vs TargetPort (Container).", "Mismatched Labels in Service Selector."]
-                },
-                {
-                    day: 5,
-                    phase: 2,
-                    title: "ConfigMaps & Secrets",
-                    goal: "Decouple configuration from application code.",
-                    concepts: [
-                        { title: "ConfigMap", content: "Non-sensitive data (URLs, flags)." },
-                        { title: "Secret", content: "Sensitive data (Passwords). Base64 encoded." },
-                        { title: "Injection", content: "Can be Environment Variables or Mounted Volumes." }
-                    ],
-                    commands: [
-                        { cmd: "kubectl create configmap app-cfg --from-literal=ENV=prod", level: "Intermediate", desc: "Create CM." },
-                        { cmd: "kubectl create secret generic app-sec --from-literal=pass=123", level: "Intermediate", desc: "Create Secret." },
-                        { cmd: "kubectl explain pod.spec.containers.env", level: "Intermediate", desc: "Find YAML syntax." }
-                    ],
-                    practice: [
-                        "Create ConfigMap with custom HTML.",
-                        "Mount it to Nginx /usr/share/nginx/html.",
-                        "Inject DB password as Env Var from Secret."
-                    ],
-                    scenario: {
-                        problem: "Deploying same app to Dev and Prod with different DB URLs.",
-                        solution: "Same Deployment YAML, but reference different ConfigMaps for Dev/Prod."
-                    },
-                    mistakes: ["Committing secrets to Git.", "Expecting live updates for Env Vars (requires restart)."]
-                },
-                {
-                    day: 6,
-                    phase: 2,
-                    title: "Namespaces & Limits",
-                    goal: "Organize the cluster and prevent resource hogging.",
-                    concepts: [
-                        { title: "Namespaces", content: "Virtual clusters (dev, prod, team-a)." },
-                        { title: "Requests", content: "Minimum CPU/RAM guaranteed." },
-                        { title: "Limits", content: "Max CPU/RAM allowed. Pod killed if RAM exceeded." }
-                    ],
-                    commands: [
-                        { cmd: "kubectl create namespace dev", level: "Beginner", desc: "Create NS." },
-                        { cmd: "kubectl get pods -n dev", level: "Beginner", desc: "List pods in NS." },
-                        { cmd: "kubectl config set-context --current --namespace=dev", level: "Intermediate", desc: "Switch default NS." },
-                        { cmd: "kubectl top pods", level: "Advanced", desc: "Check resource usage." }
-                    ],
-                    practice: [
-                        "Create 'marketing' namespace.",
-                        "Deploy app with CPU/Memory limits.",
-                        "Install Metrics Server.",
-                        "Run 'kubectl top pods'."
-                    ],
-                    scenario: {
-                        problem: "Java app has memory leak, crashes the whole node.",
-                        solution: "Apply Resource Limits. Only the specific pod dies, node stays healthy."
-                    },
-                    mistakes: ["Deploying everything to 'default'.", "Not setting limits (Noisy Neighbors)."]
-                },
-                {
-                    day: 7,
-                    phase: 3,
-                    title: "Storage: PV & PVC",
-                    goal: "Persist data so it survives Pod restarts.",
-                    concepts: [
-                        { title: "PersistentVolume (PV)", content: "Physical storage resource (Disk, EBS)." },
-                        { title: "PersistentVolumeClaim (PVC)", content: "Request/Ticket for storage." },
-                        { title: "StorageClass", content: "Dynamic provisioning magic." }
-                    ],
-                    commands: [
-                        { cmd: "kubectl get sc", level: "Intermediate", desc: "List storage classes." },
-                        { cmd: "kubectl get pvc", level: "Intermediate", desc: "List claims." },
-                        { cmd: "kubectl describe pvc <name>", level: "Intermediate", desc: "Debug binding issues." }
-                    ],
-                    practice: [
-                        "Deploy MySQL pod.",
-                        "Create PVC requesting 1Gi.",
-                        "Mount PVC to /var/lib/mysql.",
-                        "Add data, delete pod, verify data persists."
-                    ],
-                    scenario: {
-                        problem: "Database node crashes. Data lost?",
-                        solution: "With PVC, new pod starts on healthy node, re-attaches drive. Data safe."
-                    },
-                    mistakes: ["Using 'hostPath' in production (stuck on one node).", "ReadWriteOnce limitation ignored."]
-                },
-                {
-                    day: 8,
-                    phase: 3,
-                    title: "StatefulSets & DaemonSets",
-                    goal: "Run databases and system agents.",
-                    concepts: [
-                        { title: "StatefulSet", content: "For DBs. Stable IDs (web-0, web-1). Ordered deployment." },
-                        { title: "DaemonSet", content: "Runs one pod on EVERY node (Logs, Monitoring)." }
-                    ],
-                    commands: [
-                        { cmd: "kubectl get statefulsets", level: "Intermediate", desc: "List StatefulSets." },
-                        { cmd: "kubectl get ds", level: "Intermediate", desc: "List DaemonSets." },
-                        { cmd: "kubectl delete pod web-0", level: "Intermediate", desc: "Watch it return with same name." }
-                    ],
-                    practice: [
-                        "Deploy node-exporter as DaemonSet.",
-                        "Deploy dummy stateful app.",
-                        "Observe stable naming convention."
-                    ],
-                    scenario: {
-                        problem: "Need to collect logs from every server.",
-                        solution: "Deploy Fluentd/Fluentbit as a DaemonSet."
-                    },
-                    mistakes: ["Using Deployments for databases (Identity matters!)."]
-                },
-                {
-                    day: 9,
-                    phase: 3,
-                    title: "Ingress & Health",
-                    goal: "Production routing and self-healing.",
-                    concepts: [
-                        { title: "Ingress", content: "L7 Routing (HTTP/HTTPS). Host or Path based." },
-                        { title: "Liveness Probe", content: "Restart me if I crash." },
-                        { title: "Readiness Probe", content: "Don't send traffic until I'm ready." }
-                    ],
-                    commands: [
-                        { cmd: "kubectl get ingress", level: "Intermediate", desc: "List rules." },
-                        { cmd: "kubectl describe ingress", level: "Intermediate", desc: "Check backend IP mapping." },
-                        { cmd: "kubectl logs -n ingress-nginx <pod>", level: "Advanced", desc: "Debug controller." }
-                    ],
-                    practice: [
-                        "Install Nginx Ingress Controller.",
-                        "Create ingress.yaml for example.local.",
-                        "Add Readiness Probe to deployment."
-                    ],
-                    scenario: {
-                        problem: "App loads but returns 502 Bad Gateway.",
-                        solution: "Check Readiness Probe. If failing, Service removes pod from LB."
-                    },
-                    mistakes: ["Missing Ingress Controller.", "Aggressive Liveness probes causing restart loops."]
-                },
-                {
-                    day: 10,
-                    phase: 4,
-                    title: "Security: RBAC",
-                    goal: "Control who can do what.",
-                    concepts: [
-                        { title: "Role", content: "Permissions (What can be done?)." },
-                        { title: "RoleBinding", content: "Assignment (Who can do it?)." },
-                        { title: "ServiceAccount", content: "Identity for bots/pods." }
-                    ],
-                    commands: [
-                        { cmd: "kubectl create serviceaccount my-app", level: "Intermediate", desc: "Create bot identity." },
-                        { cmd: "kubectl auth can-i create pods", level: "Advanced", desc: "Test permissions." },
-                        { cmd: "kubectl auth can-i ... --as=system:...", level: "Advanced", desc: "Impersonate user." }
-                    ],
-                    practice: [
-                        "Create Role 'pod-reader'.",
-                        "Bind to a user.",
-                        "Try to delete pod as that user (Should fail)."
-                    ],
-                    scenario: {
-                        problem: "CI/CD pipeline needs permission to deploy.",
-                        solution: "Create ServiceAccount, limited Role (deploy only), generate token."
-                    },
-                    mistakes: ["Giving 'cluster-admin' to everyone."]
-                },
-                {
-                    day: 11,
-                    phase: 4,
-                    title: "Autoscaling & Helm",
-                    goal: "Automation and Package Management.",
-                    concepts: [
-                        { title: "HPA", content: "Horizontal Pod Autoscaler. Scales on CPU/RAM." },
-                        { title: "Helm", content: "Package manager (apt/yum for K8s). Templates YAML." }
-                    ],
-                    commands: [
-                        { cmd: "kubectl autoscale deployment web ...", level: "Intermediate", desc: "Create HPA." },
-                        { cmd: "kubectl get hpa", level: "Intermediate", desc: "Check scaling status." },
-                        { cmd: "helm install my-release bitnami/nginx", level: "Advanced", desc: "Install chart." }
-                    ],
-                    practice: [
-                        "Install Helm.",
-                        "Deploy Redis via Helm.",
-                        "Setup HPA for Nginx.",
-                        "Generate load, watch scaling."
-                    ],
-                    scenario: {
-                        problem: "Black Friday traffic spike.",
-                        solution: "HPA detects high CPU, scales from 2 -> 20 pods automatically."
-                    },
-                    mistakes: ["Not setting resource requests (HPA needs them to calculate %)."]
-                },
-                {
-                    day: 12,
-                    phase: 4,
-                    title: "Troubleshooting & Capstone",
-                    goal: "Think like an SRE.",
-                    concepts: [
-                        { title: "Node Maintenance", content: "Draining nodes for upgrades." },
-                        { title: "Debugging", content: "Ephemeral containers, Events timeline." }
-                    ],
-                    commands: [
-                        { cmd: "kubectl drain <node>", level: "Advanced", desc: "Evict all pods." },
-                        { cmd: "kubectl debug -it pod/<name> ...", level: "Advanced", desc: "Attach debug container." },
-                        { cmd: "kubectl get events --sort-by=...", level: "Advanced", desc: "Chronological errors." }
-                    ],
-                    practice: [
-                        "Use 'drain' and 'uncordon'.",
-                        "Debug a crashed pod.",
-                        "CAPSTONE: Deploy prod-ready microservice (Namespace, Config, Storage, Ingress, HPA, Security)."
-                    ],
-                    scenario: {
-                        problem: "Capstone Project",
-                        solution: "Deploy a full stack app implementing all concepts from Days 1-11."
-                    },
-                    mistakes: ["Ignoring 'diff' before applying changes."]
-                }
-            ]
-        };
-
-        // --- State Management ---
-        let currentDayId = null; // null means dashboard
-        let progress = JSON.parse(localStorage.getItem('k8s_hero_progress')) || new Array(12).fill(false);
-
-        // --- DOM Elements ---
-        const mainContent = document.getElementById('main-content');
-        const navContainer = document.getElementById('nav-container');
-        const mobileNavContainer = document.getElementById('mobile-nav-container');
-
-        // --- Initialization ---
-        function init() {
-            renderNav();
-            loadDashboard(); // FIX: Changed from renderDashboard to loadDashboard
-        }
-
-        // --- Navigation Logic ---
-        function renderNav() {
-            const phases = curriculum.overview.phases;
-            let html = '';
-            
-            phases.forEach(phase => {
-                html += `
-                    <div class="mb-4">
-                        <div class="text-sm font-bold text-slate-700 mb-2 pl-2 ${phase.color} flex justify-between items-center">
-                            <span>Phase ${phase.id}: ${phase.title}</span>
-                        </div>
-                        <ul class="space-y-1">
-                `;
-                
-                const phaseDays = curriculum.days.filter(d => d.phase === phase.id);
-                phaseDays.forEach(day => {
-                    const isCompleted = progress[day.day - 1];
-                    const activeClass = currentDayId === day.day ? 'active' : 'hover:bg-slate-50 text-slate-600';
-                    const checkMark = isCompleted ? '<span class="text-green-500">✓</span>' : `<span class="text-slate-300 text-xs">${day.day}</span>`;
-                    
-                    html += `
-                        <li>
-                            <button onclick="loadDay(${day.day})" class="nav-item w-full text-left px-3 py-2 rounded-md text-sm transition-colors flex items-center gap-3 ${activeClass}">
-                                ${checkMark}
-                                <span class="truncate">Day ${day.day}: ${day.title}</span>
-                            </button>
-                        </li>
-                    `;
-                });
-
-                html += `</ul></div>`;
-            });
-
-            // Dashboard Link
-            const dashboardActive = currentDayId === null ? 'bg-blue-50 text-blue-700 font-bold' : 'text-slate-600 hover:bg-slate-50';
-            const dashboardHtml = `
-                <button onclick="loadDashboard()" class="w-full text-left px-3 py-2 rounded-md mb-6 text-sm flex items-center gap-3 ${dashboardActive}">
-                    <span>📊</span>
-                    <span>Dashboard Overview</span>
-                </button>
-            `;
-
-            navContainer.innerHTML = dashboardHtml + html;
-            mobileNavContainer.innerHTML = dashboardHtml + html;
-        }
-
-        function toggleMobileNav() {
-            const el = document.getElementById('mobile-sidebar');
-            el.classList.toggle('hidden');
-        }
-
-        function resetProgress() {
-            // Using a simple modal/custom dialog instead of alert/confirm
-            const proceed = window.confirm("Resetting progress will clear all completed days. Are you sure you want to reset all learning progress?");
-            if (proceed) {
-                progress = new Array(12).fill(false);
-                saveProgress();
-                renderNav();
-                if(currentDayId === null) loadDashboard();
-                else loadDay(currentDayId);
+        
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
             }
         }
 
-        function saveProgress() {
-            localStorage.setItem('k8s_hero_progress', JSON.stringify(progress));
+        .tab-active {
+            border-bottom: 2px solid #0284c7;
+            color: #0284c7;
+            font-weight: 600;
         }
 
-        function toggleDayCompletion(dayIndex) {
-            progress[dayIndex] = !progress[dayIndex];
-            saveProgress();
-            renderNav();
-            loadDay(dayIndex + 1); // Reload to update UI state
+        .card-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
         }
 
-        // --- View: Dashboard ---
-        function loadDashboard() {
-            currentDayId = null;
-            renderNav();
+        .terminal-window {
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            border-radius: 8px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+        }
 
-            // Calculate Stats
-            const completedCount = progress.filter(Boolean).length;
-            const percentage = Math.round((completedCount / 12) * 100);
+        .animate-fade-in {
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col bg-stone-50 text-stone-900 dark:bg-stone-950 dark:text-stone-100">
+
+    <!-- Navigation Bar -->
+    <nav class="bg-white dark:bg-stone-900 border-b border-stone-200 dark:border-stone-800 sticky top-0 z-50 transition-colors">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center cursor-pointer overflow-hidden" onclick="renderDashboard()">
+                    <span class="text-xl sm:text-2xl mr-2">☸️</span>
+                    <span class="font-bold text-lg sm:text-xl tracking-tight text-stone-800 dark:text-stone-100 truncate">K8s Mastery</span>
+                </div>
+                <div class="flex items-center space-x-2 sm:space-x-4">
+                    <button id="theme-toggle" class="p-2 rounded-lg bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 transition-colors">
+                        <span id="theme-toggle-icon">🌙</span>
+                    </button>
+                    <button onclick="renderDashboard()" class="text-stone-600 dark:text-stone-400 hover:text-sky-600 dark:hover:text-sky-400 font-medium transition-colors text-sm sm:text-base">Dashboard</button>
+                    <div class="hidden xs:block text-xs sm:text-sm text-stone-500 font-mono" id="progress-display">Day 0/12</div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 w-full">
+        <div id="app-view" class="w-full">
+            <!-- Content injected via JS -->
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-stone-100 dark:bg-stone-900 border-t border-stone-200 dark:border-stone-800 mt-auto transition-colors">
+        <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 text-center">
+            <p class="text-stone-500 dark:text-stone-400 text-sm">Interactive 12-Day DevOps Job-Ready Plan</p>
+        </div>
+    </footer>
+
+    <script>
+       // --- Data Storage ---
+        const k8sData = [
+            {
+                day: 1,
+                title: "The Foundation - Architecture & Pods",
+                domain: "Core",
+                focus: "Understanding why K8s exists and the smallest unit of deployment.",
+                concepts: [
+                    "Container Orchestration: Managing the lifecycle of containers.",
+                    "Control Plane: The 'brains' (API Server, Scheduler, etc.).",
+                    "Worker Nodes: Where applications run.",
+                    "Kube-apiserver: Entry point for REST commands.",
+                    "Etcd: Distributed key-value store.",
+                    "Kube-scheduler: Assigns pods to nodes.",
+                    "Kube-controller-manager: Handles cluster functions.",
+                    "Kubelet: Node agent ensuring containers run.",
+                    "Kube-proxy: Host networking & load balancing.",
+                    "Pod: Smallest deployable unit.",
+                    "Sidecar Pattern: Helper container alongside main app.",
+                    "YAML: Language for K8s objects.",
+                    "Declarative vs Imperative: What vs. How.",
+                    "Namespace: Virtual clusters.",
+                    "Context: Cluster + User + Namespace.",
+                    "Nodes: Physical/Virtual machines.",
+                    "Container Runtime: Docker/containerd.",
+                    "Minikube: Local K8s cluster.",
+                    "Manifest: File describing desired state.",
+                    "Desired State: K8s matching current to desired."
+                ],
+                tasks: [
+                    "Install Minikube and Kubectl.",
+                    "Start a Minikube cluster.",
+                    "Check cluster status `kubectl cluster-info`.",
+                    "Create namespace `dev-team`.",
+                    "List all namespaces.",
+                    "Run Nginx pod imperatively.",
+                    "Create Nginx pod via YAML.",
+                    "List pods in default namespace.",
+                    "List pods in `dev-team`.",
+                    "Describe pod lifecycle events.",
+                    "View running pod logs.",
+                    "Execute `ls` inside a pod.",
+                    "Delete a pod manually.",
+                    "Create multi-container pod (App+Logger).",
+                    "Check specific container logs.",
+                    "Get pod details in JSON.",
+                    "Use `watch` to monitor status.",
+                    "Delete all pods in namespace.",
+                    "Set default namespace context.",
+                    "Stop Minikube cluster."
+                ],
+                lab: {
+                    title: "The 'Ghost' Pod",
+                    scenario: "A developer created a pod manually, but it keeps disappearing after they delete it (or so they think). You need to prove that pods are ephemeral.",
+                    steps: "Create a pod, write a temporary file to `/tmp`, delete the pod, and recreate it. Verify the file is gone. This reinforces that Pods are not persistent."
+                },
+                commands: [
+                    { cmd: "kubectl run <name> --image=<image>", desc: "Create a pod" },
+                    { cmd: "kubectl get pods", desc: "List pods" },
+                    { cmd: "kubectl describe pod <name>", desc: "Deep dive into status" },
+                    { cmd: "kubectl logs <name>", desc: "Fetch logs" },
+                    { cmd: "kubectl delete pod <name>", desc: "Terminate pod" }
+                ],
+                resources: [
+                    { name: "Kubernetes Basics", url: "https://kubernetes.io/docs/tutorials/kubernetes-basics/" },
+                    { name: "K8s Architecture (Video)", url: "#" }
+                ]
+            },
+            {
+                day: 2,
+                title: "Scaling & Self-Healing",
+                domain: "Core",
+                focus: "Moving from single pods to managed application groups (Deployments).",
+                concepts: [
+                    "ReplicaSet: Ensures specific pod replicas run.",
+                    "Deployment: Manages ReplicaSets (Rollouts/Rollbacks).",
+                    "Labels: Key-value pairs for ID.",
+                    "Selectors: How controllers find pods.",
+                    "Replicas: Desired count of instances.",
+                    "Rolling Update: Gradual replacement of pods.",
+                    "Recreate Strategy: Kill all then create new.",
+                    "Rollback: Revert to previous version.",
+                    "Revision History: Record of states.",
+                    "Desired vs. Current vs. Ready: Status output.",
+                    "Template: Pod spec inside Deployment.",
+                    "Immutable Infrastructure: Replace, don't patch.",
+                    "Self-Healing: ReplicaSet replaces dead pods.",
+                    "Scaling Out: Increasing replicas.",
+                    "Scaling In: Decreasing replicas.",
+                    "Pause/Resume: Halting rollouts.",
+                    "MaxSurge: Extra pods during update.",
+                    "MaxUnavailable: Allowed down pods.",
+                    "Annotate: Non-identifying metadata.",
+                    "MatchLabels: Glue between Deployment/Pod."
+                ],
+                tasks: [
+                    "Create Deployment (3 replicas, Nginx).",
+                    "Scale to 5 replicas.",
+                    "Delete a pod, watch recreation.",
+                    "Update image version (v1 to v2).",
+                    "Monitor rolling update.",
+                    "Rollback to previous version.",
+                    "Change strategy to Recreate.",
+                    "Check rollout history.",
+                    "Scale back to 1 replica.",
+                    "Apply label to running pod.",
+                    "Filter pods by label.",
+                    "Pause deployment rollout.",
+                    "Update while paused.",
+                    "Resume rollout.",
+                    "Edit replicas via `kubectl edit`.",
+                    "Delete deployment, verify pods gone.",
+                    "Create deployment from dry-run.",
+                    "View ReplicaSets.",
+                    "Identify active ReplicaSet.",
+                    "Add annotation to deployment."
+                ],
+                lab: {
+                    title: "The Failed Rollout",
+                    scenario: "You deployed a new version, but the image name was misspelled. The rollout is stuck.",
+                    steps: "Create a deployment with a non-existent image. Identify `ImagePullBackOff`. Roll back to the working version and verify cluster health."
+                },
+                commands: [
+                    { cmd: "kubectl create deployment <name> ...", desc: "Create deployment" },
+                    { cmd: "kubectl scale deployment ...", desc: "Scale replicas" },
+                    { cmd: "kubectl rollout status ...", desc: "Watch updates" },
+                    { cmd: "kubectl rollout undo ...", desc: "Rollback" },
+                    { cmd: "kubectl get rs", desc: "View ReplicaSets" }
+                ],
+                resources: [
+                    { name: "K8s Deployment Docs", url: "https://kubernetes.io/docs/concepts/workloads/controllers/deployment/" }
+                ]
+            },
+            {
+                day: 3,
+                title: "Networking I - Services",
+                domain: "Network",
+                focus: "How pods talk to each other and the outside world.",
+                concepts: [
+                    "Service: Abstract way to expose app.",
+                    "ClusterIP: Internal IP only (Default).",
+                    "NodePort: Exposes on Node IP static port.",
+                    "LoadBalancer: Uses cloud LB.",
+                    "ExternalName: Maps to DNS name.",
+                    "Endpoints: List of pod IPs targeted.",
+                    "Kube-DNS/CoreDNS: Internal name resolution.",
+                    "TargetPort: Port app listens on.",
+                    "Port: Service exposed port.",
+                    "NodePort Value: 30000-32767.",
+                    "Selectors in Services: Finding target pods.",
+                    "Service Discovery: Finding by name.",
+                    "Session Affinity: Sticky sessions.",
+                    "Headless Service: ClusterIP None.",
+                    "Multi-Port Service: Exposing 80/8080.",
+                    "TCP/UDP: Supported protocols.",
+                    "IP Tables: Old traffic management.",
+                    "IPVS: High-perf traffic management.",
+                    "FQDN: svc.ns.svc.cluster.local.",
+                    "Static IP: Stable IP for ephemeral pods."
+                ],
+                tasks: [
+                    "Create ClusterIP for Nginx.",
+                    "Try access ClusterIP from local (fail).",
+                    "Curl service from temp pod.",
+                    "Expose as NodePort.",
+                    "Access via minikube service url.",
+                    "Describe service (check Endpoints).",
+                    "Scale app, watch Endpoints update.",
+                    "Create service without selector.",
+                    "Map external DB IP manually.",
+                    "Test `nslookup` from pod.",
+                    "Create LoadBalancer service.",
+                    "Verify External IP.",
+                    "Create multi-port service.",
+                    "Change selector, watch traffic stop.",
+                    "Port-forward to pod directly.",
+                    "Port-forward to service.",
+                    "Create Headless service.",
+                    "Observe Headless DNS A records.",
+                    "List all services.",
+                    "Delete service, check pod survival."
+                ],
+                lab: {
+                    title: "The Internal API",
+                    scenario: "Frontend needs to talk to Backend. Cannot use IPs as they change.",
+                    steps: "Deploy backend & frontend. Create ClusterIP for backend. Configure frontend to use backend's *service name*. Verify connectivity."
+                },
+                commands: [
+                    { cmd: "kubectl expose deployment ...", desc: "Expose app" },
+                    { cmd: "kubectl get svc", desc: "List services" },
+                    { cmd: "kubectl get ep", desc: "View endpoints" },
+                    { cmd: "kubectl port-forward ...", desc: "Local access" }
+                ],
+                resources: [
+                    { name: "Service Concept", url: "https://kubernetes.io/docs/concepts/services-networking/service/" }
+                ]
+            },
+            {
+                day: 4,
+                title: "Configuration - ConfigMaps & Secrets",
+                domain: "Config",
+                focus: "Decoupling code from configuration.",
+                concepts: [
+                    "ConfigMap: Non-sensitive config.",
+                    "Secret: Sensitive data (tokens).",
+                    "Base64 Encoding: Storage format (Not encryption!).",
+                    "Env Variables: Injecting config.",
+                    "Volume Mounts: Injecting config as files.",
+                    "Key-Value Pairs: Data structure.",
+                    "envFrom: Load all keys as envs.",
+                    "secretKeyRef: Select specific key.",
+                    "Immutable ConfigMaps: Prevent changes.",
+                    "Opaque Secrets: Default arbitrary data.",
+                    "docker-registry Secret: Private repos.",
+                    "tls Secret: SSL certificates.",
+                    "Hot Reloading: Vol mounts see changes.",
+                    "Encryption at Rest: Etcd security.",
+                    "Data Size Limit: 1MB.",
+                    "SubPath: Mount single file.",
+                    "Projected Volume: Combine sources.",
+                    "External Secrets: Sync Vault/AWS.",
+                    "Security Context: File permissions.",
+                    "Binary Data: Storing binaries."
+                ],
+                tasks: [
+                    "Create CM from literal.",
+                    "Create CM from file.",
+                    "Pod using CM as Env Var.",
+                    "Pod mounting CM as Volume.",
+                    "Create Opaque secret.",
+                    "Base64 encode string manually.",
+                    "Create Secret via YAML.",
+                    "Mount secret as volume.",
+                    "Verify file permissions inside.",
+                    "Update CM, check volume update.",
+                    "Update CM, check Env update (fail).",
+                    "Create DB password secret.",
+                    "Pass secret via envFrom.",
+                    "Create .dockerconfigjson.",
+                    "View secret YAML (decode).",
+                    "Create CM from directory.",
+                    "Use subPath for single file.",
+                    "Delete secret, observe pod.",
+                    "Annotate CM with version.",
+                    "Create CM dry-run YAML."
+                ],
+                lab: {
+                    title: "The Database Connection",
+                    scenario: "WordPress app needs DB_HOST (ConfigMap) and DB_PASSWORD (Secret).",
+                    steps: "Create required CM and Secret. Deploy pod printing these values or connecting to mock DB."
+                },
+                commands: [
+                    { cmd: "kubectl create configmap ...", desc: "Create CM" },
+                    { cmd: "kubectl create secret generic ...", desc: "Create Secret" },
+                    { cmd: "kubectl get cm/secrets", desc: "List config" }
+                ],
+                resources: [
+                    { name: "Configuring Pods", url: "https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/" }
+                ]
+            },
+            {
+                day: 5,
+                title: "Storage - Volumes & Persistence",
+                domain: "Storage",
+                focus: "Handling data that must survive pod restarts.",
+                concepts: [
+                    "Volume: Directory accessible to pod.",
+                    "PersistentVolume (PV): Admin storage.",
+                    "PersistentVolumeClaim (PVC): User request.",
+                    "StorageClass: Tiers & dynamic provisioning.",
+                    "Static Provisioning: Manual PV.",
+                    "Dynamic Provisioning: Auto PV via SC.",
+                    "Access Modes: RWO, ROM, RWM.",
+                    "Reclaim Policy: Retain/Delete/Recycle.",
+                    "HostPath: Host node directory.",
+                    "EmptyDir: Transient pod storage.",
+                    "NFS: Network File System.",
+                    "CSI: Third-party storage plugins.",
+                    "Bound: PVC matched PV.",
+                    "Pending: Waiting for PV.",
+                    "Volume Binding Mode: When to bind.",
+                    "Expand PV: Increasing size.",
+                    "Local Storage: Node specific.",
+                    "Selector/Labels: Matching PVC to PV.",
+                    "Mount Propagation: Host/Container sharing.",
+                    "Provisioner: Plugin creating storage."
+                ],
+                tasks: [
+                    "Create emptyDir volume.",
+                    "Create hostPath PV.",
+                    "Create PVC requesting 1Gi.",
+                    "Deploy pod mounting PVC.",
+                    "Write file, kill pod, verify data.",
+                    "List PVs and PVCs.",
+                    "Inspect Bound status.",
+                    "Create PVC larger than PV (Pending).",
+                    "Create StorageClass.",
+                    "Create PVC (Dynamic Provisioning).",
+                    "Change Reclaim Policy to Retain.",
+                    "Delete PVC, check PV exists.",
+                    "Delete Retain PV manually.",
+                    "Try ReadWriteMany on Minikube.",
+                    "Check df -h inside pod.",
+                    "Set storageClassName in PVC.",
+                    "Create PVC with ROK access.",
+                    "Describe PVC binding issues.",
+                    "Pod with 2 different PVCs.",
+                    "Clean up storage objects."
+                ],
+                lab: {
+                    title: "Persistent Database",
+                    scenario: "MySQL pod loses data on restart.",
+                    steps: "Create PVC. Deploy MySQL with data dir mounted to PVC. Insert data, kill pod, verify data persistence."
+                },
+                commands: [
+                    { cmd: "kubectl get pv/pvc/sc", desc: "List storage objects" },
+                    { cmd: "kubectl describe pvc <name>", desc: "Troubleshoot" }
+                ],
+                resources: [
+                    { name: "Storage Concepts", url: "https://kubernetes.io/docs/concepts/storage/" }
+                ]
+            },
+            {
+                day: 6,
+                title: "Intermediate Workloads",
+                domain: "Core",
+                focus: "StatefulSets and Jobs (Databases and Tasks).",
+                concepts: [
+                    "StatefulSet: Unique identity pods.",
+                    "Stable Network ID: web-0, web-1.",
+                    "Ordinal Index: Numbering system.",
+                    "Headless Service (SS): Discovery.",
+                    "VolumeClaimTemplates: Unique storage per pod.",
+                    "Job: Run to completion.",
+                    "CronJob: Scheduled jobs.",
+                    "Completions: Success count required.",
+                    "Parallelism: Concurrent pods.",
+                    "RestartPolicy: OnFailure/Never.",
+                    "BackoffLimit: Retries before fail.",
+                    "ActiveDeadlineSeconds: Max run time.",
+                    "Schedule Syntax: * * * * *.",
+                    "ConcurrencyPolicy: Overlap handling.",
+                    "StartingDeadlineSeconds: Missed start.",
+                    "SuccessfulJobsHistoryLimit: History.",
+                    "OrderedReady: SS update strategy.",
+                    "Parallel: SS start strategy.",
+                    "Termination Grace Period: DB flush time.",
+                    "Headless DNS: pod.svc.ns..."
+                ],
+                tasks: [
+                    "Create StatefulSet (SS) 3 replicas.",
+                    "Inspect pod names (0,1,2).",
+                    "Create Headless service for SS.",
+                    "Nslookup pod IPs.",
+                    "Scale SS, watch order.",
+                    "Delete SS pod, check name persistence.",
+                    "Create Pi calculation Job.",
+                    "Check Job logs/status.",
+                    "Job with completions/parallelism.",
+                    "Create 'Hello' CronJob.",
+                    "View CronJob history.",
+                    "Trigger Job from CronJob manually.",
+                    "Suspend CronJob.",
+                    "Set backoffLimit, force fail.",
+                    "Observe retries.",
+                    "SS with volumeClaimTemplate.",
+                    "Verify unique PVCs.",
+                    "Delete SS (PVCs remain).",
+                    "Delete PVCs manually.",
+                    "Patch CronJob schedule."
+                ],
+                lab: {
+                    title: "Nightly Backup",
+                    scenario: "Backup database every night at 2 AM.",
+                    steps: "Create CronJob running a backup script. Test with * * * * * schedule first."
+                },
+                commands: [
+                    { cmd: "kubectl get statefulset", desc: "List SS" },
+                    { cmd: "kubectl get jobs/cronjobs", desc: "List Jobs" },
+                    { cmd: "kubectl create job --from=cronjob/...", desc: "Manual trigger" }
+                ],
+                resources: [
+                    { name: "Workloads", url: "https://kubernetes.io/docs/concepts/workloads/" }
+                ]
+            },
+            {
+                day: 7,
+                title: "Networking II - Ingress",
+                domain: "Network",
+                focus: "Routing external HTTP/S traffic efficiently.",
+                concepts: [
+                    "Ingress: API for external access.",
+                    "Ingress Controller: Implementation (Nginx).",
+                    "Rules: Routing logic.",
+                    "Host-based Routing: Domain routing.",
+                    "Path-based Routing: URL path routing.",
+                    "Default Backend: No match handler.",
+                    "TLS Termination: SSL handling.",
+                    "Annotations: Controller config.",
+                    "Backend: Service + Port.",
+                    "Ingress Class: Controller selection.",
+                    "Fanout: One host, multiple paths.",
+                    "Virtual Hosting: Multi hosts, one IP.",
+                    "Rewrite Target: Modifying URL path.",
+                    "ACME/Cert-Manager: Auto SSL.",
+                    "Load Balancer Integration: Public IP.",
+                    "Nginx Snippets: Custom config.",
+                    "PathType: Prefix/Exact.",
+                    "Connectivity: Client>LB>Ingress>Svc>Pod.",
+                    "Wildcard DNS: *.example.com.",
+                    "Basic Auth: Password protection."
+                ],
+                tasks: [
+                    "Enable Minikube Ingress addon.",
+                    "Create 2 deployments (A & B).",
+                    "Create ClusterIPs for both.",
+                    "Create Ingress (Path-based).",
+                    "Map /etc/hosts for testing.",
+                    "Test path routing via curl.",
+                    "Create Ingress (Host-based).",
+                    "Create self-signed TLS secret.",
+                    "Secure Ingress with TLS.",
+                    "Test HTTPS access.",
+                    "Annotate HTTPS redirect.",
+                    "Use rewrite-target.",
+                    "Inspect controller logs.",
+                    "Describe Ingress for errors.",
+                    "Check Address field.",
+                    "Create default backend.",
+                    "Set ingressClassName.",
+                    "Test PathType: Exact.",
+                    "Create Basic Auth secret.",
+                    "Apply Basic Auth annotation."
+                ],
+                lab: {
+                    title: "The SaaS Portal",
+                    scenario: "customer1.lab.com and customer2.lab.com point to same app.",
+                    steps: "Setup host-based routing for two domains pointing to single backend. Verify routing."
+                },
+                commands: [
+                    { cmd: "kubectl get ingress", desc: "List Ingress" },
+                    { cmd: "kubectl describe ingress", desc: "Troubleshoot rules" },
+                    { cmd: "kubectl get ingressclasses", desc: "Check controllers" }
+                ],
+                resources: [
+                    { name: "Ingress Docs", url: "https://kubernetes.io/docs/concepts/services-networking/ingress/" }
+                ]
+            },
+            {
+                day: 8,
+                title: "Security & Governance - RBAC",
+                domain: "Security",
+                focus: "Who can do what in the cluster?",
+                concepts: [
+                    "RBAC: Role-Based Access Control.",
+                    "User: Human identity.",
+                    "ServiceAccount: Pod identity.",
+                    "Role: Namespace permissions.",
+                    "ClusterRole: Cluster permissions.",
+                    "RoleBinding: Attach Role to User.",
+                    "ClusterRoleBinding: Attach ClusterRole.",
+                    "Verbs: get, list, watch, create...",
+                    "Resources: pods, deployments...",
+                    "ApiGroups: apps, batch...",
+                    "Least Privilege: Minimum access.",
+                    "Impersonation: Testing auth.",
+                    "Default SA: Namespace default.",
+                    "AutomountToken: Disable token mount.",
+                    "Subject: Who (User/Group/SA).",
+                    "Admission Controllers: Validation.",
+                    "SecurityContext: Pod security.",
+                    "NetworkPolicies: Firewall rules.",
+                    "Pod Security Standards: Baseline/Restricted.",
+                    "Audit Logs: Activity tracking."
+                ],
+                tasks: [
+                    "Create ServiceAccount (SA).",
+                    "Create Role (get/list pods).",
+                    "Bind Role to SA.",
+                    "Check permissions `auth can-i`.",
+                    "Pod using restricted SA.",
+                    "Try delete from pod (fail).",
+                    "Create ClusterRole (Secrets).",
+                    "Create ClusterRoleBinding.",
+                    "Verify cluster-wide access.",
+                    "Create secure namespace.",
+                    "Disable auto-mount token.",
+                    "Role with multiple ApiGroups.",
+                    "List RoleBindings.",
+                    "Create Developer Group Role.",
+                    "Test impersonation.",
+                    "Edit RoleBinding.",
+                    "Inspect SA token.",
+                    "Create token manually.",
+                    "SecurityContext (RunAsUser).",
+                    "Run privileged pod (Risk)."
+                ],
+                lab: {
+                    title: "The Intern's Access",
+                    scenario: "Intern needs log view in staging, no delete, no secrets.",
+                    steps: "Create namespace. Create Role/Binding satisfying constraints. Verify."
+                },
+                commands: [
+                    { cmd: "kubectl auth can-i ...", desc: "Check permission" },
+                    { cmd: "kubectl create sa ...", desc: "Create Account" },
+                    { cmd: "kubectl get roles,rolebindings", desc: "List objects" }
+                ],
+                resources: [
+                    { name: "RBAC Good Practices", url: "https://kubernetes.io/docs/reference/access-authn-authz/rbac/" }
+                ]
+            },
+            {
+                day: 9,
+                title: "Resource Management & Autoscaling",
+                domain: "Ops",
+                focus: "Keeping apps healthy and cost-efficient.",
+                concepts: [
+                    "Requests: Minimum guaranteed.",
+                    "Limits: Hard maximum.",
+                    "CPU: Cores/millicores.",
+                    "Memory: Bytes (Mi/Gi).",
+                    "OOMKilled: Out of Memory.",
+                    "CPU Throttling: Hit limit.",
+                    "HPA: Horizontal Pod Autoscaler.",
+                    "VPA: Vertical Pod Autoscaler.",
+                    "Cluster Autoscaler: Node scaling.",
+                    "Metrics Server: Data collector.",
+                    "QoS: Guaranteed/Burstable/BestEffort.",
+                    "LimitRange: Default ns limits.",
+                    "ResourceQuota: Hard ns total.",
+                    "Taints: Repel pods.",
+                    "Tolerations: Allow on tainted.",
+                    "Node Affinity: Prefer nodes.",
+                    "Pod Anti-Affinity: Spread pods.",
+                    "Drain: Evacuate node.",
+                    "Cordon: Mark unschedulable.",
+                    "PriorityClass: Scheduling priority."
+                ],
+                tasks: [
+                    "Install Metrics Server.",
+                    "Pod with Requests/Limits.",
+                    "Check `kubectl top pods`.",
+                    "Check `kubectl top nodes`.",
+                    "Pod requesting too much (Pending).",
+                    "Pod exceeding limit (OOMKilled).",
+                    "Create HPA (CPU 50%).",
+                    "Stress test pod.",
+                    "Watch HPA scale up.",
+                    "Stop stress, watch scale down.",
+                    "Create ResourceQuota.",
+                    "Exceed quota (Error).",
+                    "Create LimitRange.",
+                    "Deploy no-limit pod (Auto-assigned).",
+                    "Cordon a node.",
+                    "Drain a node.",
+                    "Apply Taint to node.",
+                    "Deploy pod (fail sched).",
+                    "Add Toleration to pod.",
+                    "Use NodeAffinity."
+                ],
+                lab: {
+                    title: "Black Friday Prep",
+                    scenario: "Huge traffic spike expected. Scale 2->20 replicas at 60% CPU.",
+                    steps: "Setup HPA. Use load generator. Verify scaling."
+                },
+                commands: [
+                    { cmd: "kubectl top pods", desc: "Usage metrics" },
+                    { cmd: "kubectl cordon/drain <node>", desc: "Node ops" }
+                ],
+                resources: [
+                    { name: "Resource Mgmt", url: "https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/" }
+                ]
+            },
+            {
+                day: 10,
+                title: "Helm - The Package Manager",
+                domain: "Ops",
+                focus: "Managing complex apps with templates.",
+                concepts: [
+                    "Helm: K8s Package Manager.",
+                    "Chart: The package.",
+                    "Repo: Chart storage.",
+                    "Release: Installed instance.",
+                    "Values.yaml: Custom config.",
+                    "Templates: YAML with logic.",
+                    "helm install: Deploy.",
+                    "helm upgrade: Update.",
+                    "helm rollback: Revert.",
+                    "helm list: Show releases.",
+                    "Dry Run: Test install.",
+                    "Chart.yaml: Metadata.",
+                    "Dependencies: Sub-charts.",
+                    "Library Charts: Reusable helpers.",
+                    "Helm Lint: Best practices check.",
+                    "Helm Uninstall: Remove.",
+                    "Namespace Flag: Install location.",
+                    "Set Flag: CLI overrides.",
+                    "Release History: Timeline.",
+                    "Built-in Objects: .Release.Name."
+                ],
+                tasks: [
+                    "Install Helm.",
+                    "Add Bitnami repo.",
+                    "Search Nginx chart.",
+                    "Install Nginx via Helm.",
+                    "List releases.",
+                    "Get release values.",
+                    "Upgrade release (NodePort).",
+                    "Rollback upgrade.",
+                    "Uninstall release.",
+                    "Create own chart.",
+                    "Inspect structure.",
+                    "Modify values.yaml.",
+                    "Install local chart.",
+                    "Dry-run debug.",
+                    "Add custom template.",
+                    "Pass value to ConfigMap.",
+                    "Use Helm function.",
+                    "Package chart (.tgz).",
+                    "Install specific namespace.",
+                    "View history."
+                ],
+                lab: {
+                    title: "Multi-Environment Deploy",
+                    scenario: "Deploy same app to dev, staging, prod with different replicas.",
+                    steps: "Use one Helm chart but 3 values files. Deploy all 3 and verify."
+                },
+                commands: [
+                    { cmd: "helm install <name> <chart>", desc: "Install" },
+                    { cmd: "helm upgrade <name> <chart>", desc: "Update" },
+                    { cmd: "helm list", desc: "View all" },
+                    { cmd: "helm rollback <name> <rev>", desc: "Revert" }
+                ],
+                resources: [
+                    { name: "Helm Docs", url: "https://helm.sh/docs/" }
+                ]
+            },
+            {
+                day: 11,
+                title: "Monitoring, Logging & Troubleshooting",
+                domain: "Ops",
+                focus: "Finding and fixing issues in production.",
+                concepts: [
+                    "Liveness Probe: Restart if dead.",
+                    "Readiness Probe: Traffic if ready.",
+                    "Startup Probe: Slow start handling.",
+                    "CrashLoopBackOff: Crash on start.",
+                    "ImagePullBackOff: Image missing.",
+                    "Pending: Scheduling issue.",
+                    "Error: Failed start.",
+                    "Terminating: Stuck shutdown.",
+                    "Metrics Server: Resource data.",
+                    "Prometheus: Metric collection.",
+                    "Grafana: Visualization.",
+                    "EFK/ELK: Log aggregation.",
+                    "Sidecar Logger: Stream to stdout.",
+                    "Events: Cluster history.",
+                    "Describe: #1 Troubleshooting tool.",
+                    "Port-forwarding: Debug access.",
+                    "Ephemeral Debug Containers: Tool injection.",
+                    "Node Logs: Syslog.",
+                    "Audit Logs: Security trail.",
+                    "Termination Message: Failure reason."
+                ],
+                tasks: [
+                    "Failing Liveness probe.",
+                    "Watch restart loop.",
+                    "Create Readiness probe.",
+                    "Break readiness, check traffic.",
+                    "Cause CrashLoopBackOff.",
+                    "Fix and recover.",
+                    "Debug misspelled secret.",
+                    "Logs --previous.",
+                    "Get events sorted.",
+                    "Debug Service no endpoints.",
+                    "Exec network test.",
+                    "Install Prometheus/Grafana.",
+                    "View Dashboard.",
+                    "Simulate node failure.",
+                    "Use kubectl debug.",
+                    "Check kubelet status.",
+                    "Debug Ingress 503.",
+                    "Debug RBAC Denied.",
+                    "Check Usage vs Limits.",
+                    "Clean up failed pods."
+                ],
+                lab: {
+                    title: "The Silent Failure",
+                    scenario: "App is slow. 1 of 5 pods is healthy, others crashing/not ready.",
+                    steps: "Deploy 5 replicas, 2 programmed to fail readiness. Identify with `get pods` and `get ep`."
+                },
+                commands: [
+                    { cmd: "kubectl logs --previous", desc: "Crash logs" },
+                    { cmd: "kubectl get events", desc: "Cluster events" },
+                    { cmd: "kubectl debug", desc: "Debug pod" }
+                ],
+                resources: [
+                    { name: "Troubleshooting Guide", url: "https://kubernetes.io/docs/tasks/debug/" }
+                ]
+            },
+            {
+                day: 12,
+                title: "CI/CD & Cloud Readiness",
+                domain: "Advanced",
+                focus: "Project day and interview prep.",
+                concepts: [
+                    "CI/CD: Continuous Integration/Deploy.",
+                    "GitOps: Git as truth.",
+                    "ArgoCD: Sync Git to K8s.",
+                    "Blue/Green: Traffic switch.",
+                    "Canary: % rollout.",
+                    "IaC: Terraform/Pulumi.",
+                    "Managed K8s: EKS/GKE/AKS.",
+                    "Karpenter: Cloud scaling.",
+                    "IRSA: Cloud permissions.",
+                    "Cloud Controller: API Bridge.",
+                    "VPC/Subnets: Networking.",
+                    "Ingress (Cloud): ALB/GLB.",
+                    "Image Registry: ECR/GCR.",
+                    "Scanning: Vulnerabilities.",
+                    "Cost Optimization: Spot instances.",
+                    "Multi-cluster: Management.",
+                    "Service Mesh: Istio.",
+                    "Finalizers: Deletion blocks.",
+                    "OwnerReferences: Hierarchy.",
+                    "Kustomize: Manifest mgmt."
+                ],
+                tasks: [
+                    "Create GitHub Repo.",
+                    "Write Dockerfile.",
+                    "GitHub Action Build/Push.",
+                    "Create Helm Chart.",
+                    "Deploy via Helm.",
+                    "Setup Ingress.",
+                    "Setup HPA.",
+                    "Implement Readiness Probe.",
+                    "Install ArgoCD (Optional).",
+                    "Explain Pod Lifecycle.",
+                    "Troubleshoot Pending.",
+                    "Deployment vs StatefulSet.",
+                    "Service Routing logic.",
+                    "Securing a cluster."
+                ],
+                lab: {
+                    title: "Final Hands-on Project",
+                    scenario: "Build a full pipeline.",
+                    steps: "From code to K8s with CI/CD, Ingress, and Scaling."
+                },
+                commands: [
+                    { cmd: "N/A", desc: "Project Focus" }
+                ],
+                resources: [
+                    { name: "Project Guides", url: "#" }
+                ]
+            }
+        ];
+
+        // State Management
+        let currentState = {
+            activeDay: null,
+            completedDays: new Set(),
+            theme: 'light'
+        };
+
+        // --- Core Logic ---
+
+        function init() {
+            initTheme();
+            renderDashboard();
+        }
+
+        function initTheme() {
+            const toggle = document.getElementById('theme-toggle');
+            const icon = document.getElementById('theme-toggle-icon');
             
-            // Calculate Command Stats
-            let beginner = 0, intermediate = 0, advanced = 0;
-            // Only count commands for completed days? Or all? Let's show TOTAL available vs Completed
-            // Let's show "Commands Unlocked" based on completed days
-            curriculum.days.forEach((d, idx) => {
-                if(progress[idx]) {
-                    d.commands.forEach(c => {
-                        if(c.level === 'Beginner') beginner++;
-                        if(c.level === 'Intermediate') intermediate++;
-                        if(c.level === 'Advanced') advanced++;
-                    });
+            // Check saved theme
+            if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+                icon.textContent = '☀️';
+                currentState.theme = 'dark';
+            }
+
+            toggle.addEventListener('click', () => {
+                if (document.documentElement.classList.contains('dark')) {
+                    document.documentElement.classList.remove('dark');
+                    localStorage.theme = 'light';
+                    icon.textContent = '🌙';
+                    currentState.theme = 'light';
+                } else {
+                    document.documentElement.classList.add('dark');
+                    localStorage.theme = 'dark';
+                    icon.textContent = '☀️';
+                    currentState.theme = 'dark';
+                }
+                // Refresh charts on theme change for color consistency
+                if (currentState.activeDay === null) renderDashboard();
+            });
+        }
+
+        // Dashboard Renderer
+        function renderDashboard() {
+            currentState.activeDay = null;
+            const app = document.getElementById('app-view');
+            const totalConcepts = k8sData.reduce((acc, day) => acc + day.concepts.length, 0);
+            const totalTasks = k8sData.reduce((acc, day) => acc + (day.tasks ? day.tasks.length : 0), 0);
+            
+            app.innerHTML = `
+                <div class="mb-8 text-center animate-fade-in">
+                    <h1 class="text-3xl sm:text-4xl font-bold text-stone-800 dark:text-stone-100 mb-2">Kubernetes 12-Day Journey</h1>
+                    <p class="text-stone-600 dark:text-stone-400 max-w-2xl mx-auto px-4">Master architecture, networking, and operations through structured daily practice.</p>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-8">
+                    <div class="bg-white dark:bg-stone-900 p-6 rounded-xl shadow-sm border border-stone-200 dark:border-stone-800">
+                        <div class="text-sm text-stone-500 dark:text-stone-400 font-medium">Total Days</div>
+                        <div class="text-3xl font-bold text-stone-800 dark:text-stone-100">12</div>
+                        <div class="mt-2 h-2 bg-stone-100 dark:bg-stone-800 rounded-full overflow-hidden">
+                            <div class="h-full bg-sky-500" style="width: ${Math.round((currentState.completedDays.size / 12) * 100)}%"></div>
+                        </div>
+                        <div class="text-xs text-stone-400 mt-1">${currentState.completedDays.size} completed</div>
+                    </div>
+                    <div class="bg-white dark:bg-stone-900 p-6 rounded-xl shadow-sm border border-stone-200 dark:border-stone-800">
+                        <div class="text-sm text-stone-500 dark:text-stone-400 font-medium">Core Concepts</div>
+                        <div class="text-3xl font-bold text-stone-800 dark:text-stone-100">${totalConcepts}</div>
+                        <div class="text-xs text-stone-400 mt-1">Foundational knowledge</div>
+                    </div>
+                    <div class="hidden sm:block bg-white dark:bg-stone-900 p-6 rounded-xl shadow-sm border border-stone-200 dark:border-stone-800">
+                        <div class="text-sm text-stone-500 dark:text-stone-400 font-medium">Hands-on Tasks</div>
+                        <div class="text-3xl font-bold text-stone-800 dark:text-stone-100">${totalTasks}</div>
+                        <div class="text-xs text-stone-400 mt-1">Practical exercises</div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 mb-12">
+                    <div class="bg-white dark:bg-stone-900 p-4 sm:p-6 rounded-xl shadow-sm border border-stone-200 dark:border-stone-800">
+                        <h3 class="text-lg font-bold text-stone-800 dark:text-stone-100 mb-4 text-center sm:text-left">Daily Curriculum Balance</h3>
+                        <div class="chart-container"><canvas id="curriculumChart"></canvas></div>
+                    </div>
+                    <div class="bg-white dark:bg-stone-900 p-4 sm:p-6 rounded-xl shadow-sm border border-stone-200 dark:border-stone-800">
+                        <h3 class="text-lg font-bold text-stone-800 dark:text-stone-100 mb-4 text-center sm:text-left">Skill Domain Focus</h3>
+                        <div class="chart-container"><canvas id="domainChart"></canvas></div>
+                    </div>
+                </div>
+
+                <h2 class="text-2xl font-bold text-stone-800 dark:text-stone-100 mb-6 px-2">Your Learning Path</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mb-12">
+                    ${k8sData.map(day => `
+                        <div onclick="renderDay(${day.day})" 
+                             class="bg-white dark:bg-stone-900 p-5 rounded-lg border ${currentState.completedDays.has(day.day) ? 'border-sky-500 bg-sky-50 dark:bg-sky-950/20' : 'border-stone-200 dark:border-stone-800'} shadow-sm card-hover cursor-pointer transition-all">
+                            <div class="flex justify-between items-start mb-2">
+                                <span class="text-xs font-bold uppercase tracking-wider ${currentState.completedDays.has(day.day) ? 'text-sky-600' : 'text-stone-400'}">Day ${day.day}</span>
+                                ${currentState.completedDays.has(day.day) ? '✅' : ''}
+                            </div>
+                            <h4 class="font-bold text-stone-800 dark:text-stone-100 mb-2 leading-tight">${day.title}</h4>
+                            <div class="mt-4 flex items-center gap-2">
+                                <span class="px-2 py-1 bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 text-xs rounded font-medium">${day.domain}</span>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            initCharts();
+            updateNavProgress();
+        }
+
+        function initCharts() {
+            const isDark = document.documentElement.classList.contains('dark');
+            const textColor = isDark ? '#a8a29e' : '#78716c';
+            const gridColor = isDark ? '#292524' : '#e7e5e4';
+
+            const ctx1 = document.getElementById('curriculumChart').getContext('2d');
+            new Chart(ctx1, {
+                type: 'bar',
+                data: {
+                    labels: k8sData.map(d => `D${d.day}`),
+                    datasets: [
+                        { label: 'Concepts', data: k8sData.map(d => d.concepts.length), backgroundColor: isDark ? '#44403c' : '#e7e5e4' },
+                        { label: 'Tasks', data: k8sData.map(d => d.tasks ? d.tasks.length : 0), backgroundColor: '#0ea5e9' }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { labels: { color: textColor } } },
+                    scales: {
+                        x: { stacked: true, grid: { display: false }, ticks: { color: textColor } },
+                        y: { stacked: true, grid: { color: gridColor }, ticks: { color: textColor } }
+                    }
                 }
             });
 
-            mainContent.innerHTML = `
-                <div class="max-w-4xl mx-auto animate-fade-in">
-                    <div class="mb-8">
-                        <h2 class="text-3xl font-bold text-slate-900 mb-2">Welcome, Future DevOps Hero.</h2>
-                        <p class="text-slate-600">Your 12-day path to Kubernetes mastery. Select a day to begin learning.</p>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                        <!-- Progress Card -->
-                        <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-                            <h3 class="font-semibold text-slate-800 mb-4">Overall Progress</h3>
-                            <div class="chart-container flex justify-center items-center">
-                                <canvas id="progressChart"></canvas>
-                            </div>
-                            <div class="text-center mt-4">
-                                <span class="text-4xl font-bold text-blue-600">${percentage}%</span>
-                                <span class="text-slate-400 text-sm block">Curriculum Completed</span>
-                            </div>
-                        </div>
-
-                        <!-- Skill Card -->
-                        <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-                            <h3 class="font-semibold text-slate-800 mb-4">Commands Unlocked</h3>
-                            <div class="chart-container">
-                                <canvas id="skillChart"></canvas>
-                            </div>
-                            <p class="text-xs text-center text-slate-400 mt-4">Complete days to unlock more commands in your arsenal.</p>
-                        </div>
-                    </div>
-
-                    <!-- Quick Action -->
-                    <div class="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl p-8 text-white shadow-lg">
-                        <h3 class="text-2xl font-bold mb-2">Ready to continue?</h3>
-                        <p class="opacity-90 mb-6">Pick up where you left off or review a past concept.</p>
-                        <button onclick="continueJourney()" class="bg-white text-blue-600 px-6 py-2 rounded-lg font-semibold hover:bg-blue-50 transition-colors">
-                            Go to Next Unfinished Day
-                        </button>
-                    </div>
-                </div>
-            `;
-
-            // Render Charts
-            renderCharts(completedCount, beginner, intermediate, advanced);
-        }
-
-        function continueJourney() {
-            const nextDay = progress.findIndex(p => !p);
-            if(nextDay !== -1) loadDay(nextDay + 1);
-            else loadDay(1);
-        }
-
-        function renderCharts(completed, beg, int, adv) {
-            // Destroy existing charts to prevent canvas re-use errors in Chart.js
-            const existingCharts = Chart.getChart('progressChart');
-            if (existingCharts) existingCharts.destroy();
-            const existingSkillChart = Chart.getChart('skillChart');
-            if (existingSkillChart) existingSkillChart.destroy();
-
-            // Progress Doughnut
-            new Chart(document.getElementById('progressChart'), {
+            const domains = {};
+            k8sData.forEach(d => domains[d.domain] = (domains[d.domain] || 0) + 1);
+            const ctx2 = document.getElementById('domainChart').getContext('2d');
+            new Chart(ctx2, {
                 type: 'doughnut',
                 data: {
-                    labels: ['Completed', 'Remaining'],
+                    labels: Object.keys(domains),
                     datasets: [{
-                        data: [completed, 12 - completed],
-                        backgroundColor: ['#2563eb', '#e2e8f0'],
+                        data: Object.values(domains),
+                        backgroundColor: ['#78716c', '#0ea5e9', '#f59e0b', '#10b981', '#6366f1'],
                         borderWidth: 0
                     }]
                 },
                 options: {
-                    cutout: '75%',
                     responsive: true,
                     maintainAspectRatio: false,
-                    plugins: { legend: { display: false } }
-                }
-            });
-
-            // Skill Bar
-            new Chart(document.getElementById('skillChart'), {
-                type: 'bar',
-                data: {
-                    labels: ['Beginner', 'Intermediate', 'Advanced'],
-                    datasets: [{
-                        label: 'Commands Learned',
-                        data: [beg, int, adv],
-                        backgroundColor: ['#22c55e', '#f59e0b', '#ef4444'],
-                        borderRadius: 4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: { y: { beginAtZero: true, grid: { display: false } }, x: { grid: { display: false } } },
-                    plugins: { legend: { display: false } }
+                    cutout: '65%',
+                    plugins: { legend: { position: 'right', labels: { color: textColor, padding: 20 } } }
                 }
             });
         }
 
-        // --- View: Day Detail ---
-        function loadDay(dayId) {
-            currentDayId = dayId;
-            renderNav();
-            const data = curriculum.days.find(d => d.day === dayId);
-            const isDone = progress[dayId - 1];
+        function renderDay(dayId) {
+            currentState.activeDay = dayId;
+            const dayData = k8sData.find(d => d.day === dayId);
+            const app = document.getElementById('app-view');
+            const isCompleted = currentState.completedDays.has(dayId);
 
-            mainContent.innerHTML = `
-                <div class="max-w-5xl mx-auto pb-12">
-                    <!-- Header -->
-                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-                        <div>
-                            <div class="text-sm font-bold text-blue-600 mb-1">PHASE ${data.phase}</div>
-                            <h2 class="text-3xl font-bold text-slate-900">Day ${data.day}: ${data.title}</h2>
-                            <p class="text-slate-600 mt-2">${data.goal}</p>
-                        </div>
-                        <button onclick="toggleDayCompletion(${dayId - 1})" class="flex items-center gap-2 px-4 py-2 rounded-lg border ${isDone ? 'bg-green-50 border-green-200 text-green-700' : 'bg-white border-slate-300 text-slate-600 hover:bg-slate-50'} transition-colors">
-                            <div class="w-5 h-5 rounded border flex items-center justify-center ${isDone ? 'bg-green-500 border-green-500 text-white' : 'border-slate-400'}">
-                                ${isDone ? '✓' : ''}
-                            </div>
-                            <span>${isDone ? 'Day Completed' : 'Mark as Complete'}</span>
+            app.innerHTML = `
+                <div class="mb-6 flex flex-col md:flex-row justify-between md:items-center gap-4 animate-fade-in">
+                    <div>
+                        <button onclick="renderDashboard()" class="text-sm text-stone-500 dark:text-stone-400 hover:text-stone-800 dark:hover:text-stone-200 mb-2 flex items-center gap-1">← Back</button>
+                        <h2 class="text-2xl sm:text-3xl font-bold text-stone-900 dark:text-stone-100">Day ${dayData.day}: ${dayData.title}</h2>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <button onclick="toggleComplete(${dayId})" 
+                            class="w-full md:w-auto px-4 py-2 rounded-lg font-medium transition-colors ${isCompleted ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400 border border-green-200 dark:border-green-800' : 'bg-stone-800 text-white dark:bg-stone-100 dark:text-stone-900 hover:bg-stone-700 dark:hover:bg-stone-200'}">
+                            ${isCompleted ? 'Completed ✓' : 'Mark as Complete'}
                         </button>
                     </div>
+                </div>
 
-                    <!-- Tabs -->
-                    <div class="mb-6 border-b border-slate-200">
-                        <div class="flex gap-6">
-                            <button onclick="switchTab('concepts')" id="tab-concepts" class="tab-btn px-2 py-3 border-b-2 font-medium text-sm border-blue-600 text-blue-600">1. Concepts</button>
-                            <button onclick="switchTab('commands')" id="tab-commands" class="tab-btn px-2 py-3 border-b-2 font-medium text-sm border-transparent text-slate-500 hover:text-slate-700">2. Command Lab</button>
-                            <button onclick="switchTab('practice')" id="tab-practice" class="tab-btn px-2 py-3 border-b-2 font-medium text-sm border-transparent text-slate-500 hover:text-slate-700">3. Practice & Real World</button>
-                        </div>
-                    </div>
+                <div class="flex border-b border-stone-200 dark:border-stone-800 mb-8 overflow-x-auto no-scrollbar">
+                    ${['Concepts', 'Tasks', 'Lab Scenario', 'Commands'].map(tab => `
+                        <button onclick="switchTab('${tab}')" 
+                            id="tab-${tab.replace(' ', '')}"
+                            class="px-4 sm:px-6 py-3 text-sm font-medium text-stone-500 dark:text-stone-400 hover:text-stone-800 dark:hover:text-stone-200 transition-colors whitespace-nowrap ${tab === 'Concepts' ? 'tab-active' : ''}">
+                            ${tab}
+                        </button>
+                    `).join('')}
+                </div>
 
-                    <!-- Tab Content -->
-                    <div id="content-concepts" class="tab-content block animate-fade-in">
-                        <div class="grid grid-cols-1 gap-6">
-                            <div class="bg-blue-50 border border-blue-100 p-6 rounded-xl">
-                                <h3 class="font-bold text-blue-900 mb-4 flex items-center gap-2">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                    Core Theory
-                                </h3>
-                                <div class="grid gap-4">
-                                    ${data.concepts.map(c => `
-                                        <div class="bg-white p-4 rounded-lg shadow-sm">
-                                            <div class="font-bold text-slate-800">${c.title}</div>
-                                            <div class="text-slate-600 text-sm mt-1">${c.content}</div>
-                                        </div>
-                                    `).join('')}
-                                </div>
-                            </div>
-                            
-                            <!-- Visual Diagram (Simplified for Day 1 Architecture) -->
-                            ${dayId === 1 ? `
-                                <div class="bg-slate-800 p-6 rounded-xl text-white">
-                                    <h4 class="font-bold mb-4 text-center">Kubernetes Architecture Visualizer</h4>
-                                    <div class="flex flex-col md:flex-row gap-4 justify-center">
-                                        <!-- Control Plane -->
-                                        <div class="border-2 border-blue-400 p-4 rounded-lg flex-1">
-                                            <div class="text-center font-mono text-blue-300 mb-2">Control Plane</div>
-                                            <div class="grid gap-2">
-                                                <div class="bg-slate-700 p-2 text-center rounded text-xs">API Server</div>
-                                                <div class="bg-slate-700 p-2 text-center rounded text-xs">Scheduler</div>
-                                                <div class="bg-slate-700 p-2 text-center rounded text-xs">Controller Mgr</div>
-                                                <div class="bg-slate-700 p-2 text-center rounded text-xs">etcd</div>
-                                            </div>
-                                        </div>
-                                        <!-- Worker Nodes -->
-                                        <div class="flex-1 flex flex-col gap-2">
-                                            <div class="border-2 border-green-400 p-4 rounded-lg">
-                                                <div class="text-center font-mono text-green-300 mb-2">Worker Node 1</div>
-                                                <div class="flex gap-2 justify-center">
-                                                    <div class="bg-green-800 p-2 rounded text-xs w-16 text-center">Pod</div>
-                                                    <div class="bg-green-800 p-2 rounded text-xs w-16 text-center">Pod</div>
-                                                </div>
-                                                <div class="mt-2 bg-slate-700 text-xs p-1 text-center">Kubelet / Kube-proxy</div>
-                                            </div>
-                                            <div class="border-2 border-green-400 p-4 rounded-lg">
-                                                <div class="text-center font-mono text-green-300 mb-2">Worker Node 2</div>
-                                                 <div class="flex gap-2 justify-center">
-                                                    <div class="bg-green-800 p-2 rounded text-xs w-16 text-center">Pod</div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            ` : ''}
-                        </div>
-                    </div>
-
-                    <div id="content-commands" class="tab-content hidden animate-fade-in">
-                        <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-                            <table class="w-full text-left border-collapse">
-                                <thead>
-                                    <tr class="bg-slate-50 border-b border-slate-200 text-slate-500 text-xs uppercase">
-                                        <th class="p-4 font-semibold">Command</th>
-                                        <th class="p-4 font-semibold">Level</th>
-                                        <th class="p-4 font-semibold">Description</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="divide-y divide-slate-100">
-                                    ${data.commands.map(c => `
-                                        <tr class="hover:bg-slate-50 transition-colors">
-                                            <td class="p-4 font-mono text-sm text-blue-700 font-medium">${c.cmd}</td>
-                                            <td class="p-4">
-                                                <span class="px-2 py-1 rounded-full text-xs font-medium 
-                                                    ${c.level === 'Beginner' ? 'bg-green-100 text-green-700' : 
-                                                      c.level === 'Intermediate' ? 'bg-amber-100 text-amber-700' : 
-                                                      'bg-red-100 text-red-700'}">
-                                                    ${c.level}
-                                                </span>
-                                            </td>
-                                            <td class="p-4 text-slate-600 text-sm">${c.desc}</td>
-                                        </tr>
-                                    `).join('')}
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="mt-4 bg-slate-900 text-slate-300 p-4 rounded-lg font-mono text-sm">
-                            <p class="mb-2 text-slate-500"># Pro Tip: Daily Alias</p>
-                            <p>$ alias k=kubectl</p>
-                        </div>
-                    </div>
-
-                    <div id="content-practice" class="tab-content hidden animate-fade-in">
-                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                            <!-- Checklist -->
-                            <div class="space-y-6">
-                                <h3 class="font-bold text-slate-800">Hands-on Checklist</h3>
-                                <div class="space-y-3">
-                                    ${data.practice.map((p, i) => `
-                                        <label class="flex items-start gap-3 p-3 bg-white rounded-lg border border-slate-200 shadow-sm cursor-pointer hover:border-blue-300">
-                                            <input type="checkbox" class="mt-1 w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500">
-                                            <span class="text-sm text-slate-700">${p}</span>
-                                        </label>
-                                    `).join('')}
-                                </div>
-                            </div>
-
-                            <!-- Interactive Scenario Cards -->
-                            <div class="space-y-6">
-                                <h3 class="font-bold text-slate-800">Real World Scenario</h3>
-                                <div class="perspective-1000">
-                                    <div class="interactive-card bg-white border border-slate-200 rounded-xl p-6 relative overflow-hidden group">
-                                        <div class="absolute top-0 right-0 bg-amber-100 text-amber-800 text-xs px-2 py-1 rounded-bl-lg font-bold">SCENARIO</div>
-                                        <h4 class="font-bold text-slate-800 mb-2">The Problem</h4>
-                                        <p class="text-slate-600 mb-4">${data.scenario.problem}</p>
-                                        
-                                        <div class="border-t border-slate-100 pt-4 mt-4">
-                                            <h4 class="font-bold text-green-700 mb-2 text-sm">The Solution</h4>
-                                            <p class="text-slate-700 text-sm bg-green-50 p-3 rounded border border-green-100">${data.scenario.solution}</p>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <h3 class="font-bold text-slate-800 mt-8">Common Mistakes</h3>
-                                <div class="bg-red-50 border border-red-100 rounded-xl p-4">
-                                    <ul class="space-y-2">
-                                        ${data.mistakes.map(m => `
-                                            <li class="flex items-start gap-2 text-sm text-red-800">
-                                                <span class="text-red-500 font-bold">!</span> ${m}
-                                            </li>
-                                        `).join('')}
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                <div id="tab-content" class="min-h-[300px] animate-fade-in">
+                    ${getConceptsHTML(dayData)}
                 </div>
             `;
+            updateNavProgress();
         }
 
-        function switchTab(tabName) {
-            // Update buttons
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.classList.remove('border-blue-600', 'text-blue-600');
-                btn.classList.add('border-transparent', 'text-slate-500');
-            });
-            const activeBtn = document.getElementById(`tab-${tabName}`);
-            activeBtn.classList.remove('border-transparent', 'text-slate-500');
-            activeBtn.classList.add('border-blue-600', 'text-blue-600');
-
-            // Update content
-            document.querySelectorAll('.tab-content').forEach(content => {
-                content.classList.add('hidden');
-            });
-            document.getElementById(`content-${tabName}`).classList.remove('hidden');
+        function getConceptsHTML(data) {
+            return `
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    ${data.concepts.map((concept, index) => {
+                        const parts = concept.split(':');
+                        return `
+                        <div class="bg-white dark:bg-stone-900 p-4 rounded-lg border border-stone-200 dark:border-stone-800 shadow-sm transition-colors">
+                            <span class="text-xs font-mono text-stone-400 dark:text-stone-500 block mb-1">#${index + 1}</span>
+                            <h4 class="font-bold text-stone-800 dark:text-stone-100 mb-1">${parts[0]}</h4>
+                            <p class="text-sm text-stone-600 dark:text-stone-400">${parts[1] || ''}</p>
+                        </div>`;
+                    }).join('')}
+                </div>`;
         }
 
-        // Start App
+        function getTasksHTML(data) {
+            if (!data.tasks) return `<p class="text-stone-500">No tasks listed for this day.</p>`;
+            return `
+                 <div class="bg-white dark:bg-stone-900 rounded-xl shadow-sm border border-stone-200 dark:border-stone-800 overflow-hidden">
+                    <div class="p-4 sm:p-6 bg-stone-50 dark:bg-stone-850 border-b border-stone-200 dark:border-stone-800">
+                        <h3 class="font-bold text-stone-800 dark:text-stone-100">Hands-on Checklist</h3>
+                    </div>
+                    <div class="divide-y divide-stone-100 dark:divide-stone-800">
+                        ${data.tasks.map((task, index) => `
+                            <label class="flex items-start gap-4 p-4 hover:bg-stone-50 dark:hover:bg-stone-800/50 cursor-pointer transition-colors">
+                                <input type="checkbox" class="mt-1 w-4 h-4 text-sky-600 rounded border-stone-300 dark:border-stone-700 bg-transparent focus:ring-sky-500">
+                                <div class="text-sm sm:text-base text-stone-600 dark:text-stone-300">${task}</div>
+                            </label>`).join('')}
+                    </div>
+                </div>`;
+        }
+
+        function getLabHTML(data) {
+            return `
+                <div class="max-w-4xl mx-auto">
+                    <div class="bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-900/30 rounded-xl p-6">
+                        <div class="flex items-center gap-2 mb-4">
+                            <span class="text-2xl">⚡</span>
+                            <h3 class="text-xl font-bold text-amber-900 dark:text-amber-400">${data.lab.title}</h3>
+                        </div>
+                        <p class="text-amber-900 dark:text-amber-300/80 mb-6 leading-relaxed">${data.lab.scenario}</p>
+                        <div class="bg-white dark:bg-stone-900/50 p-4 rounded-lg border border-amber-100 dark:border-amber-900/20 text-amber-900 dark:text-amber-300">
+                            <strong>Steps:</strong> ${data.lab.steps}
+                        </div>
+                    </div>
+                </div>`;
+        }
+
+        function getCommandsHTML(data) {
+            return `
+                <div class="terminal-window p-4 sm:p-6 font-mono text-xs sm:text-sm overflow-x-auto">
+                    <div class="flex gap-2 mb-4">
+                        <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                        <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                        <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                    </div>
+                    <div class="space-y-4">
+                        ${data.commands.map(c => `
+                            <div>
+                                <div class="text-stone-500 mb-1"># ${c.desc}</div>
+                                <div class="text-green-400 flex"><span class="mr-2">$</span><span>${c.cmd}</span></div>
+                            </div>`).join('')}
+                    </div>
+                </div>`;
+        }
+
+        window.switchTab = function(tabName) {
+            document.querySelectorAll('button[id^="tab-"]').forEach(b => b.classList.remove('tab-active'));
+            document.getElementById(`tab-${tabName.replace(' ', '')}`).classList.add('tab-active');
+            const dayData = k8sData.find(d => d.day === currentState.activeDay);
+            const contentDiv = document.getElementById('tab-content');
+            if (tabName === 'Concepts') contentDiv.innerHTML = getConceptsHTML(dayData);
+            if (tabName === 'Tasks') contentDiv.innerHTML = getTasksHTML(dayData);
+            if (tabName === 'Lab Scenario') contentDiv.innerHTML = getLabHTML(dayData);
+            if (tabName === 'Commands') contentDiv.innerHTML = getCommandsHTML(dayData);
+        };
+
+        window.toggleComplete = function(dayId) {
+            currentState.completedDays.has(dayId) ? currentState.completedDays.delete(dayId) : currentState.completedDays.add(dayId);
+            renderDay(dayId);
+        };
+
+        window.updateNavProgress = function() {
+             const display = document.getElementById('progress-display');
+             if(display) display.textContent = `Day ${currentState.activeDay || 0}/12`;
+        }
+
+        window.renderDashboard = renderDashboard;
+        window.renderDay = renderDay;
+
         init();
-
     </script>
 </body>
 </html>
