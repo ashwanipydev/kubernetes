@@ -129,760 +129,548 @@
     <script>
        // --- Data Storage ---
         const k8sData = [
-            {
-                day: 1,
-                title: "The Foundation - Architecture & Pods",
-                domain: "Core",
-                focus: "Understanding why K8s exists and the smallest unit of deployment.",
-                concepts: [
-                    "Container Orchestration: Managing the lifecycle of containers.",
-                    "Control Plane: The 'brains' (API Server, Scheduler, etc.).",
-                    "Worker Nodes: Where applications run.",
-                    "Kube-apiserver: Entry point for REST commands.",
-                    "Etcd: Distributed key-value store.",
-                    "Kube-scheduler: Assigns pods to nodes.",
-                    "Kube-controller-manager: Handles cluster functions.",
-                    "Kubelet: Node agent ensuring containers run.",
-                    "Kube-proxy: Host networking & load balancing.",
-                    "Pod: Smallest deployable unit.",
-                    "Sidecar Pattern: Helper container alongside main app.",
-                    "YAML: Language for K8s objects.",
-                    "Declarative vs Imperative: What vs. How.",
-                    "Namespace: Virtual clusters.",
-                    "Context: Cluster + User + Namespace.",
-                    "Nodes: Physical/Virtual machines.",
-                    "Container Runtime: Docker/containerd.",
-                    "Minikube: Local K8s cluster.",
-                    "Manifest: File describing desired state.",
-                    "Desired State: K8s matching current to desired."
-                ],
-                tasks: [
-                    "Install Minikube and Kubectl.",
-                    "Start a Minikube cluster.",
-                    "Check cluster status `kubectl cluster-info`.",
-                    "Create namespace `dev-team`.",
-                    "List all namespaces.",
-                    "Run Nginx pod imperatively.",
-                    "Create Nginx pod via YAML.",
-                    "List pods in default namespace.",
-                    "List pods in `dev-team`.",
-                    "Describe pod lifecycle events.",
-                    "View running pod logs.",
-                    "Execute `ls` inside a pod.",
-                    "Delete a pod manually.",
-                    "Create multi-container pod (App+Logger).",
-                    "Check specific container logs.",
-                    "Get pod details in JSON.",
-                    "Use `watch` to monitor status.",
-                    "Delete all pods in namespace.",
-                    "Set default namespace context.",
-                    "Stop Minikube cluster."
-                ],
-                lab: {
-                    title: "The 'Ghost' Pod",
-                    scenario: "A developer created a pod manually, but it keeps disappearing after they delete it (or so they think). You need to prove that pods are ephemeral.",
-                    steps: "Create a pod, write a temporary file to `/tmp`, delete the pod, and recreate it. Verify the file is gone. This reinforces that Pods are not persistent."
-                },
-                commands: [
-                    { cmd: "kubectl run <name> --image=<image>", desc: "Create a pod" },
-                    { cmd: "kubectl get pods", desc: "List pods" },
-                    { cmd: "kubectl describe pod <name>", desc: "Deep dive into status" },
-                    { cmd: "kubectl logs <name>", desc: "Fetch logs" },
-                    { cmd: "kubectl delete pod <name>", desc: "Terminate pod" }
-                ],
-                resources: [
-                    { name: "Kubernetes Basics", url: "https://kubernetes.io/docs/tutorials/kubernetes-basics/" },
-                    { name: "K8s Architecture (Video)", url: "#" }
-                ]
-            },
-            {
-                day: 2,
-                title: "Scaling & Self-Healing",
-                domain: "Core",
-                focus: "Moving from single pods to managed application groups (Deployments).",
-                concepts: [
-                    "ReplicaSet: Ensures specific pod replicas run.",
-                    "Deployment: Manages ReplicaSets (Rollouts/Rollbacks).",
-                    "Labels: Key-value pairs for ID.",
-                    "Selectors: How controllers find pods.",
-                    "Replicas: Desired count of instances.",
-                    "Rolling Update: Gradual replacement of pods.",
-                    "Recreate Strategy: Kill all then create new.",
-                    "Rollback: Revert to previous version.",
-                    "Revision History: Record of states.",
-                    "Desired vs. Current vs. Ready: Status output.",
-                    "Template: Pod spec inside Deployment.",
-                    "Immutable Infrastructure: Replace, don't patch.",
-                    "Self-Healing: ReplicaSet replaces dead pods.",
-                    "Scaling Out: Increasing replicas.",
-                    "Scaling In: Decreasing replicas.",
-                    "Pause/Resume: Halting rollouts.",
-                    "MaxSurge: Extra pods during update.",
-                    "MaxUnavailable: Allowed down pods.",
-                    "Annotate: Non-identifying metadata.",
-                    "MatchLabels: Glue between Deployment/Pod."
-                ],
-                tasks: [
-                    "Create Deployment (3 replicas, Nginx).",
-                    "Scale to 5 replicas.",
-                    "Delete a pod, watch recreation.",
-                    "Update image version (v1 to v2).",
-                    "Monitor rolling update.",
-                    "Rollback to previous version.",
-                    "Change strategy to Recreate.",
-                    "Check rollout history.",
-                    "Scale back to 1 replica.",
-                    "Apply label to running pod.",
-                    "Filter pods by label.",
-                    "Pause deployment rollout.",
-                    "Update while paused.",
-                    "Resume rollout.",
-                    "Edit replicas via `kubectl edit`.",
-                    "Delete deployment, verify pods gone.",
-                    "Create deployment from dry-run.",
-                    "View ReplicaSets.",
-                    "Identify active ReplicaSet.",
-                    "Add annotation to deployment."
-                ],
-                lab: {
-                    title: "The Failed Rollout",
-                    scenario: "You deployed a new version, but the image name was misspelled. The rollout is stuck.",
-                    steps: "Create a deployment with a non-existent image. Identify `ImagePullBackOff`. Roll back to the working version and verify cluster health."
-                },
-                commands: [
-                    { cmd: "kubectl create deployment <name> ...", desc: "Create deployment" },
-                    { cmd: "kubectl scale deployment ...", desc: "Scale replicas" },
-                    { cmd: "kubectl rollout status ...", desc: "Watch updates" },
-                    { cmd: "kubectl rollout undo ...", desc: "Rollback" },
-                    { cmd: "kubectl get rs", desc: "View ReplicaSets" }
-                ],
-                resources: [
-                    { name: "K8s Deployment Docs", url: "https://kubernetes.io/docs/concepts/workloads/controllers/deployment/" }
-                ]
-            },
-            {
-                day: 3,
-                title: "Networking I - Services",
-                domain: "Network",
-                focus: "How pods talk to each other and the outside world.",
-                concepts: [
-                    "Service: Abstract way to expose app.",
-                    "ClusterIP: Internal IP only (Default).",
-                    "NodePort: Exposes on Node IP static port.",
-                    "LoadBalancer: Uses cloud LB.",
-                    "ExternalName: Maps to DNS name.",
-                    "Endpoints: List of pod IPs targeted.",
-                    "Kube-DNS/CoreDNS: Internal name resolution.",
-                    "TargetPort: Port app listens on.",
-                    "Port: Service exposed port.",
-                    "NodePort Value: 30000-32767.",
-                    "Selectors in Services: Finding target pods.",
-                    "Service Discovery: Finding by name.",
-                    "Session Affinity: Sticky sessions.",
-                    "Headless Service: ClusterIP None.",
-                    "Multi-Port Service: Exposing 80/8080.",
-                    "TCP/UDP: Supported protocols.",
-                    "IP Tables: Old traffic management.",
-                    "IPVS: High-perf traffic management.",
-                    "FQDN: svc.ns.svc.cluster.local.",
-                    "Static IP: Stable IP for ephemeral pods."
-                ],
-                tasks: [
-                    "Create ClusterIP for Nginx.",
-                    "Try access ClusterIP from local (fail).",
-                    "Curl service from temp pod.",
-                    "Expose as NodePort.",
-                    "Access via minikube service url.",
-                    "Describe service (check Endpoints).",
-                    "Scale app, watch Endpoints update.",
-                    "Create service without selector.",
-                    "Map external DB IP manually.",
-                    "Test `nslookup` from pod.",
-                    "Create LoadBalancer service.",
-                    "Verify External IP.",
-                    "Create multi-port service.",
-                    "Change selector, watch traffic stop.",
-                    "Port-forward to pod directly.",
-                    "Port-forward to service.",
-                    "Create Headless service.",
-                    "Observe Headless DNS A records.",
-                    "List all services.",
-                    "Delete service, check pod survival."
-                ],
-                lab: {
-                    title: "The Internal API",
-                    scenario: "Frontend needs to talk to Backend. Cannot use IPs as they change.",
-                    steps: "Deploy backend & frontend. Create ClusterIP for backend. Configure frontend to use backend's *service name*. Verify connectivity."
-                },
-                commands: [
-                    { cmd: "kubectl expose deployment ...", desc: "Expose app" },
-                    { cmd: "kubectl get svc", desc: "List services" },
-                    { cmd: "kubectl get ep", desc: "View endpoints" },
-                    { cmd: "kubectl port-forward ...", desc: "Local access" }
-                ],
-                resources: [
-                    { name: "Service Concept", url: "https://kubernetes.io/docs/concepts/services-networking/service/" }
-                ]
-            },
-            {
-                day: 4,
-                title: "Configuration - ConfigMaps & Secrets",
-                domain: "Config",
-                focus: "Decoupling code from configuration.",
-                concepts: [
-                    "ConfigMap: Non-sensitive config.",
-                    "Secret: Sensitive data (tokens).",
-                    "Base64 Encoding: Storage format (Not encryption!).",
-                    "Env Variables: Injecting config.",
-                    "Volume Mounts: Injecting config as files.",
-                    "Key-Value Pairs: Data structure.",
-                    "envFrom: Load all keys as envs.",
-                    "secretKeyRef: Select specific key.",
-                    "Immutable ConfigMaps: Prevent changes.",
-                    "Opaque Secrets: Default arbitrary data.",
-                    "docker-registry Secret: Private repos.",
-                    "tls Secret: SSL certificates.",
-                    "Hot Reloading: Vol mounts see changes.",
-                    "Encryption at Rest: Etcd security.",
-                    "Data Size Limit: 1MB.",
-                    "SubPath: Mount single file.",
-                    "Projected Volume: Combine sources.",
-                    "External Secrets: Sync Vault/AWS.",
-                    "Security Context: File permissions.",
-                    "Binary Data: Storing binaries."
-                ],
-                tasks: [
-                    "Create CM from literal.",
-                    "Create CM from file.",
-                    "Pod using CM as Env Var.",
-                    "Pod mounting CM as Volume.",
-                    "Create Opaque secret.",
-                    "Base64 encode string manually.",
-                    "Create Secret via YAML.",
-                    "Mount secret as volume.",
-                    "Verify file permissions inside.",
-                    "Update CM, check volume update.",
-                    "Update CM, check Env update (fail).",
-                    "Create DB password secret.",
-                    "Pass secret via envFrom.",
-                    "Create .dockerconfigjson.",
-                    "View secret YAML (decode).",
-                    "Create CM from directory.",
-                    "Use subPath for single file.",
-                    "Delete secret, observe pod.",
-                    "Annotate CM with version.",
-                    "Create CM dry-run YAML."
-                ],
-                lab: {
-                    title: "The Database Connection",
-                    scenario: "WordPress app needs DB_HOST (ConfigMap) and DB_PASSWORD (Secret).",
-                    steps: "Create required CM and Secret. Deploy pod printing these values or connecting to mock DB."
-                },
-                commands: [
-                    { cmd: "kubectl create configmap ...", desc: "Create CM" },
-                    { cmd: "kubectl create secret generic ...", desc: "Create Secret" },
-                    { cmd: "kubectl get cm/secrets", desc: "List config" }
-                ],
-                resources: [
-                    { name: "Configuring Pods", url: "https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/" }
-                ]
-            },
-            {
-                day: 5,
-                title: "Storage - Volumes & Persistence",
-                domain: "Storage",
-                focus: "Handling data that must survive pod restarts.",
-                concepts: [
-                    "Volume: Directory accessible to pod.",
-                    "PersistentVolume (PV): Admin storage.",
-                    "PersistentVolumeClaim (PVC): User request.",
-                    "StorageClass: Tiers & dynamic provisioning.",
-                    "Static Provisioning: Manual PV.",
-                    "Dynamic Provisioning: Auto PV via SC.",
-                    "Access Modes: RWO, ROM, RWM.",
-                    "Reclaim Policy: Retain/Delete/Recycle.",
-                    "HostPath: Host node directory.",
-                    "EmptyDir: Transient pod storage.",
-                    "NFS: Network File System.",
-                    "CSI: Third-party storage plugins.",
-                    "Bound: PVC matched PV.",
-                    "Pending: Waiting for PV.",
-                    "Volume Binding Mode: When to bind.",
-                    "Expand PV: Increasing size.",
-                    "Local Storage: Node specific.",
-                    "Selector/Labels: Matching PVC to PV.",
-                    "Mount Propagation: Host/Container sharing.",
-                    "Provisioner: Plugin creating storage."
-                ],
-                tasks: [
-                    "Create emptyDir volume.",
-                    "Create hostPath PV.",
-                    "Create PVC requesting 1Gi.",
-                    "Deploy pod mounting PVC.",
-                    "Write file, kill pod, verify data.",
-                    "List PVs and PVCs.",
-                    "Inspect Bound status.",
-                    "Create PVC larger than PV (Pending).",
-                    "Create StorageClass.",
-                    "Create PVC (Dynamic Provisioning).",
-                    "Change Reclaim Policy to Retain.",
-                    "Delete PVC, check PV exists.",
-                    "Delete Retain PV manually.",
-                    "Try ReadWriteMany on Minikube.",
-                    "Check df -h inside pod.",
-                    "Set storageClassName in PVC.",
-                    "Create PVC with ROK access.",
-                    "Describe PVC binding issues.",
-                    "Pod with 2 different PVCs.",
-                    "Clean up storage objects."
-                ],
-                lab: {
-                    title: "Persistent Database",
-                    scenario: "MySQL pod loses data on restart.",
-                    steps: "Create PVC. Deploy MySQL with data dir mounted to PVC. Insert data, kill pod, verify data persistence."
-                },
-                commands: [
-                    { cmd: "kubectl get pv/pvc/sc", desc: "List storage objects" },
-                    { cmd: "kubectl describe pvc <name>", desc: "Troubleshoot" }
-                ],
-                resources: [
-                    { name: "Storage Concepts", url: "https://kubernetes.io/docs/concepts/storage/" }
-                ]
-            },
-            {
-                day: 6,
-                title: "Intermediate Workloads",
-                domain: "Core",
-                focus: "StatefulSets and Jobs (Databases and Tasks).",
-                concepts: [
-                    "StatefulSet: Unique identity pods.",
-                    "Stable Network ID: web-0, web-1.",
-                    "Ordinal Index: Numbering system.",
-                    "Headless Service (SS): Discovery.",
-                    "VolumeClaimTemplates: Unique storage per pod.",
-                    "Job: Run to completion.",
-                    "CronJob: Scheduled jobs.",
-                    "Completions: Success count required.",
-                    "Parallelism: Concurrent pods.",
-                    "RestartPolicy: OnFailure/Never.",
-                    "BackoffLimit: Retries before fail.",
-                    "ActiveDeadlineSeconds: Max run time.",
-                    "Schedule Syntax: * * * * *.",
-                    "ConcurrencyPolicy: Overlap handling.",
-                    "StartingDeadlineSeconds: Missed start.",
-                    "SuccessfulJobsHistoryLimit: History.",
-                    "OrderedReady: SS update strategy.",
-                    "Parallel: SS start strategy.",
-                    "Termination Grace Period: DB flush time.",
-                    "Headless DNS: pod.svc.ns..."
-                ],
-                tasks: [
-                    "Create StatefulSet (SS) 3 replicas.",
-                    "Inspect pod names (0,1,2).",
-                    "Create Headless service for SS.",
-                    "Nslookup pod IPs.",
-                    "Scale SS, watch order.",
-                    "Delete SS pod, check name persistence.",
-                    "Create Pi calculation Job.",
-                    "Check Job logs/status.",
-                    "Job with completions/parallelism.",
-                    "Create 'Hello' CronJob.",
-                    "View CronJob history.",
-                    "Trigger Job from CronJob manually.",
-                    "Suspend CronJob.",
-                    "Set backoffLimit, force fail.",
-                    "Observe retries.",
-                    "SS with volumeClaimTemplate.",
-                    "Verify unique PVCs.",
-                    "Delete SS (PVCs remain).",
-                    "Delete PVCs manually.",
-                    "Patch CronJob schedule."
-                ],
-                lab: {
-                    title: "Nightly Backup",
-                    scenario: "Backup database every night at 2 AM.",
-                    steps: "Create CronJob running a backup script. Test with * * * * * schedule first."
-                },
-                commands: [
-                    { cmd: "kubectl get statefulset", desc: "List SS" },
-                    { cmd: "kubectl get jobs/cronjobs", desc: "List Jobs" },
-                    { cmd: "kubectl create job --from=cronjob/...", desc: "Manual trigger" }
-                ],
-                resources: [
-                    { name: "Workloads", url: "https://kubernetes.io/docs/concepts/workloads/" }
-                ]
-            },
-            {
-                day: 7,
-                title: "Networking II - Ingress",
-                domain: "Network",
-                focus: "Routing external HTTP/S traffic efficiently.",
-                concepts: [
-                    "Ingress: API for external access.",
-                    "Ingress Controller: Implementation (Nginx).",
-                    "Rules: Routing logic.",
-                    "Host-based Routing: Domain routing.",
-                    "Path-based Routing: URL path routing.",
-                    "Default Backend: No match handler.",
-                    "TLS Termination: SSL handling.",
-                    "Annotations: Controller config.",
-                    "Backend: Service + Port.",
-                    "Ingress Class: Controller selection.",
-                    "Fanout: One host, multiple paths.",
-                    "Virtual Hosting: Multi hosts, one IP.",
-                    "Rewrite Target: Modifying URL path.",
-                    "ACME/Cert-Manager: Auto SSL.",
-                    "Load Balancer Integration: Public IP.",
-                    "Nginx Snippets: Custom config.",
-                    "PathType: Prefix/Exact.",
-                    "Connectivity: Client>LB>Ingress>Svc>Pod.",
-                    "Wildcard DNS: *.example.com.",
-                    "Basic Auth: Password protection."
-                ],
-                tasks: [
-                    "Enable Minikube Ingress addon.",
-                    "Create 2 deployments (A & B).",
-                    "Create ClusterIPs for both.",
-                    "Create Ingress (Path-based).",
-                    "Map /etc/hosts for testing.",
-                    "Test path routing via curl.",
-                    "Create Ingress (Host-based).",
-                    "Create self-signed TLS secret.",
-                    "Secure Ingress with TLS.",
-                    "Test HTTPS access.",
-                    "Annotate HTTPS redirect.",
-                    "Use rewrite-target.",
-                    "Inspect controller logs.",
-                    "Describe Ingress for errors.",
-                    "Check Address field.",
-                    "Create default backend.",
-                    "Set ingressClassName.",
-                    "Test PathType: Exact.",
-                    "Create Basic Auth secret.",
-                    "Apply Basic Auth annotation."
-                ],
-                lab: {
-                    title: "The SaaS Portal",
-                    scenario: "customer1.lab.com and customer2.lab.com point to same app.",
-                    steps: "Setup host-based routing for two domains pointing to single backend. Verify routing."
-                },
-                commands: [
-                    { cmd: "kubectl get ingress", desc: "List Ingress" },
-                    { cmd: "kubectl describe ingress", desc: "Troubleshoot rules" },
-                    { cmd: "kubectl get ingressclasses", desc: "Check controllers" }
-                ],
-                resources: [
-                    { name: "Ingress Docs", url: "https://kubernetes.io/docs/concepts/services-networking/ingress/" }
-                ]
-            },
-            {
-                day: 8,
-                title: "Security & Governance - RBAC",
-                domain: "Security",
-                focus: "Who can do what in the cluster?",
-                concepts: [
-                    "RBAC: Role-Based Access Control.",
-                    "User: Human identity.",
-                    "ServiceAccount: Pod identity.",
-                    "Role: Namespace permissions.",
-                    "ClusterRole: Cluster permissions.",
-                    "RoleBinding: Attach Role to User.",
-                    "ClusterRoleBinding: Attach ClusterRole.",
-                    "Verbs: get, list, watch, create...",
-                    "Resources: pods, deployments...",
-                    "ApiGroups: apps, batch...",
-                    "Least Privilege: Minimum access.",
-                    "Impersonation: Testing auth.",
-                    "Default SA: Namespace default.",
-                    "AutomountToken: Disable token mount.",
-                    "Subject: Who (User/Group/SA).",
-                    "Admission Controllers: Validation.",
-                    "SecurityContext: Pod security.",
-                    "NetworkPolicies: Firewall rules.",
-                    "Pod Security Standards: Baseline/Restricted.",
-                    "Audit Logs: Activity tracking."
-                ],
-                tasks: [
-                    "Create ServiceAccount (SA).",
-                    "Create Role (get/list pods).",
-                    "Bind Role to SA.",
-                    "Check permissions `auth can-i`.",
-                    "Pod using restricted SA.",
-                    "Try delete from pod (fail).",
-                    "Create ClusterRole (Secrets).",
-                    "Create ClusterRoleBinding.",
-                    "Verify cluster-wide access.",
-                    "Create secure namespace.",
-                    "Disable auto-mount token.",
-                    "Role with multiple ApiGroups.",
-                    "List RoleBindings.",
-                    "Create Developer Group Role.",
-                    "Test impersonation.",
-                    "Edit RoleBinding.",
-                    "Inspect SA token.",
-                    "Create token manually.",
-                    "SecurityContext (RunAsUser).",
-                    "Run privileged pod (Risk)."
-                ],
-                lab: {
-                    title: "The Intern's Access",
-                    scenario: "Intern needs log view in staging, no delete, no secrets.",
-                    steps: "Create namespace. Create Role/Binding satisfying constraints. Verify."
-                },
-                commands: [
-                    { cmd: "kubectl auth can-i ...", desc: "Check permission" },
-                    { cmd: "kubectl create sa ...", desc: "Create Account" },
-                    { cmd: "kubectl get roles,rolebindings", desc: "List objects" }
-                ],
-                resources: [
-                    { name: "RBAC Good Practices", url: "https://kubernetes.io/docs/reference/access-authn-authz/rbac/" }
-                ]
-            },
-            {
-                day: 9,
-                title: "Resource Management & Autoscaling",
-                domain: "Ops",
-                focus: "Keeping apps healthy and cost-efficient.",
-                concepts: [
-                    "Requests: Minimum guaranteed.",
-                    "Limits: Hard maximum.",
-                    "CPU: Cores/millicores.",
-                    "Memory: Bytes (Mi/Gi).",
-                    "OOMKilled: Out of Memory.",
-                    "CPU Throttling: Hit limit.",
-                    "HPA: Horizontal Pod Autoscaler.",
-                    "VPA: Vertical Pod Autoscaler.",
-                    "Cluster Autoscaler: Node scaling.",
-                    "Metrics Server: Data collector.",
-                    "QoS: Guaranteed/Burstable/BestEffort.",
-                    "LimitRange: Default ns limits.",
-                    "ResourceQuota: Hard ns total.",
-                    "Taints: Repel pods.",
-                    "Tolerations: Allow on tainted.",
-                    "Node Affinity: Prefer nodes.",
-                    "Pod Anti-Affinity: Spread pods.",
-                    "Drain: Evacuate node.",
-                    "Cordon: Mark unschedulable.",
-                    "PriorityClass: Scheduling priority."
-                ],
-                tasks: [
-                    "Install Metrics Server.",
-                    "Pod with Requests/Limits.",
-                    "Check `kubectl top pods`.",
-                    "Check `kubectl top nodes`.",
-                    "Pod requesting too much (Pending).",
-                    "Pod exceeding limit (OOMKilled).",
-                    "Create HPA (CPU 50%).",
-                    "Stress test pod.",
-                    "Watch HPA scale up.",
-                    "Stop stress, watch scale down.",
-                    "Create ResourceQuota.",
-                    "Exceed quota (Error).",
-                    "Create LimitRange.",
-                    "Deploy no-limit pod (Auto-assigned).",
-                    "Cordon a node.",
-                    "Drain a node.",
-                    "Apply Taint to node.",
-                    "Deploy pod (fail sched).",
-                    "Add Toleration to pod.",
-                    "Use NodeAffinity."
-                ],
-                lab: {
-                    title: "Black Friday Prep",
-                    scenario: "Huge traffic spike expected. Scale 2->20 replicas at 60% CPU.",
-                    steps: "Setup HPA. Use load generator. Verify scaling."
-                },
-                commands: [
-                    { cmd: "kubectl top pods", desc: "Usage metrics" },
-                    { cmd: "kubectl cordon/drain <node>", desc: "Node ops" }
-                ],
-                resources: [
-                    { name: "Resource Mgmt", url: "https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/" }
-                ]
-            },
-            {
-                day: 10,
-                title: "Helm - The Package Manager",
-                domain: "Ops",
-                focus: "Managing complex apps with templates.",
-                concepts: [
-                    "Helm: K8s Package Manager.",
-                    "Chart: The package.",
-                    "Repo: Chart storage.",
-                    "Release: Installed instance.",
-                    "Values.yaml: Custom config.",
-                    "Templates: YAML with logic.",
-                    "helm install: Deploy.",
-                    "helm upgrade: Update.",
-                    "helm rollback: Revert.",
-                    "helm list: Show releases.",
-                    "Dry Run: Test install.",
-                    "Chart.yaml: Metadata.",
-                    "Dependencies: Sub-charts.",
-                    "Library Charts: Reusable helpers.",
-                    "Helm Lint: Best practices check.",
-                    "Helm Uninstall: Remove.",
-                    "Namespace Flag: Install location.",
-                    "Set Flag: CLI overrides.",
-                    "Release History: Timeline.",
-                    "Built-in Objects: .Release.Name."
-                ],
-                tasks: [
-                    "Install Helm.",
-                    "Add Bitnami repo.",
-                    "Search Nginx chart.",
-                    "Install Nginx via Helm.",
-                    "List releases.",
-                    "Get release values.",
-                    "Upgrade release (NodePort).",
-                    "Rollback upgrade.",
-                    "Uninstall release.",
-                    "Create own chart.",
-                    "Inspect structure.",
-                    "Modify values.yaml.",
-                    "Install local chart.",
-                    "Dry-run debug.",
-                    "Add custom template.",
-                    "Pass value to ConfigMap.",
-                    "Use Helm function.",
-                    "Package chart (.tgz).",
-                    "Install specific namespace.",
-                    "View history."
-                ],
-                lab: {
-                    title: "Multi-Environment Deploy",
-                    scenario: "Deploy same app to dev, staging, prod with different replicas.",
-                    steps: "Use one Helm chart but 3 values files. Deploy all 3 and verify."
-                },
-                commands: [
-                    { cmd: "helm install <name> <chart>", desc: "Install" },
-                    { cmd: "helm upgrade <name> <chart>", desc: "Update" },
-                    { cmd: "helm list", desc: "View all" },
-                    { cmd: "helm rollback <name> <rev>", desc: "Revert" }
-                ],
-                resources: [
-                    { name: "Helm Docs", url: "https://helm.sh/docs/" }
-                ]
-            },
-            {
-                day: 11,
-                title: "Monitoring, Logging & Troubleshooting",
-                domain: "Ops",
-                focus: "Finding and fixing issues in production.",
-                concepts: [
-                    "Liveness Probe: Restart if dead.",
-                    "Readiness Probe: Traffic if ready.",
-                    "Startup Probe: Slow start handling.",
-                    "CrashLoopBackOff: Crash on start.",
-                    "ImagePullBackOff: Image missing.",
-                    "Pending: Scheduling issue.",
-                    "Error: Failed start.",
-                    "Terminating: Stuck shutdown.",
-                    "Metrics Server: Resource data.",
-                    "Prometheus: Metric collection.",
-                    "Grafana: Visualization.",
-                    "EFK/ELK: Log aggregation.",
-                    "Sidecar Logger: Stream to stdout.",
-                    "Events: Cluster history.",
-                    "Describe: #1 Troubleshooting tool.",
-                    "Port-forwarding: Debug access.",
-                    "Ephemeral Debug Containers: Tool injection.",
-                    "Node Logs: Syslog.",
-                    "Audit Logs: Security trail.",
-                    "Termination Message: Failure reason."
-                ],
-                tasks: [
-                    "Failing Liveness probe.",
-                    "Watch restart loop.",
-                    "Create Readiness probe.",
-                    "Break readiness, check traffic.",
-                    "Cause CrashLoopBackOff.",
-                    "Fix and recover.",
-                    "Debug misspelled secret.",
-                    "Logs --previous.",
-                    "Get events sorted.",
-                    "Debug Service no endpoints.",
-                    "Exec network test.",
-                    "Install Prometheus/Grafana.",
-                    "View Dashboard.",
-                    "Simulate node failure.",
-                    "Use kubectl debug.",
-                    "Check kubelet status.",
-                    "Debug Ingress 503.",
-                    "Debug RBAC Denied.",
-                    "Check Usage vs Limits.",
-                    "Clean up failed pods."
-                ],
-                lab: {
-                    title: "The Silent Failure",
-                    scenario: "App is slow. 1 of 5 pods is healthy, others crashing/not ready.",
-                    steps: "Deploy 5 replicas, 2 programmed to fail readiness. Identify with `get pods` and `get ep`."
-                },
-                commands: [
-                    { cmd: "kubectl logs --previous", desc: "Crash logs" },
-                    { cmd: "kubectl get events", desc: "Cluster events" },
-                    { cmd: "kubectl debug", desc: "Debug pod" }
-                ],
-                resources: [
-                    { name: "Troubleshooting Guide", url: "https://kubernetes.io/docs/tasks/debug/" }
-                ]
-            },
-            {
-                day: 12,
-                title: "CI/CD & Cloud Readiness",
-                domain: "Advanced",
-                focus: "Project day and interview prep.",
-                concepts: [
-                    "CI/CD: Continuous Integration/Deploy.",
-                    "GitOps: Git as truth.",
-                    "ArgoCD: Sync Git to K8s.",
-                    "Blue/Green: Traffic switch.",
-                    "Canary: % rollout.",
-                    "IaC: Terraform/Pulumi.",
-                    "Managed K8s: EKS/GKE/AKS.",
-                    "Karpenter: Cloud scaling.",
-                    "IRSA: Cloud permissions.",
-                    "Cloud Controller: API Bridge.",
-                    "VPC/Subnets: Networking.",
-                    "Ingress (Cloud): ALB/GLB.",
-                    "Image Registry: ECR/GCR.",
-                    "Scanning: Vulnerabilities.",
-                    "Cost Optimization: Spot instances.",
-                    "Multi-cluster: Management.",
-                    "Service Mesh: Istio.",
-                    "Finalizers: Deletion blocks.",
-                    "OwnerReferences: Hierarchy.",
-                    "Kustomize: Manifest mgmt."
-                ],
-                tasks: [
-                    "Create GitHub Repo.",
-                    "Write Dockerfile.",
-                    "GitHub Action Build/Push.",
-                    "Create Helm Chart.",
-                    "Deploy via Helm.",
-                    "Setup Ingress.",
-                    "Setup HPA.",
-                    "Implement Readiness Probe.",
-                    "Install ArgoCD (Optional).",
-                    "Explain Pod Lifecycle.",
-                    "Troubleshoot Pending.",
-                    "Deployment vs StatefulSet.",
-                    "Service Routing logic.",
-                    "Securing a cluster."
-                ],
-                lab: {
-                    title: "Final Hands-on Project",
-                    scenario: "Build a full pipeline.",
-                    steps: "From code to K8s with CI/CD, Ingress, and Scaling."
-                },
-                commands: [
-                    { cmd: "N/A", desc: "Project Focus" }
-                ],
-                resources: [
-                    { name: "Project Guides", url: "#" }
-                ]
-            }
-        ];
+    {
+        day: 1,
+        title: "The Foundation - Architecture & Pods",
+        domain: "Core",
+        focus: "Understanding why K8s exists and the smallest unit of deployment.",
+        concepts: [
+            "Container Orchestration: Managing the lifecycle of containers.",
+            "Control Plane: The 'brains' (API Server, Scheduler, etc.).",
+            "Worker Nodes: Where applications run.",
+            "Kube-apiserver: Entry point for REST commands.",
+            "Etcd: Distributed key-value store.",
+            "Kube-scheduler: Assigns pods to nodes.",
+            "Kube-controller-manager: Handles cluster functions.",
+            "Kubelet: Node agent ensuring containers run.",
+            "Kube-proxy: Host networking & load balancing.",
+            "Pod: Smallest deployable unit.",
+            "Sidecar Pattern: Helper container alongside main app.",
+            "YAML: Language for K8s objects.",
+            "Declarative vs Imperative: What vs. How.",
+            "Namespace: Virtual clusters.",
+            "Context: Cluster + User + Namespace.",
+            "Nodes: Physical/Virtual machines.",
+            "Container Runtime: Docker/containerd.",
+            "Minikube/Kind: Local K8s cluster.",
+            "Manifest: File describing desired state.",
+            "Desired State: K8s matching current to desired."
+        ],
+        tasks: [
+            "Install kind/minikube and Kubectl.",
+            "Start a cluster.",
+            "Check cluster status `kubectl cluster-info`.",
+            "Create namespace `dev-team`.",
+            "List all namespaces.",
+            "Run Nginx pod imperatively.",
+            "Create Nginx pod via YAML.",
+            "List pods in default namespace.",
+            "List pods in `dev-team`.",
+            "Describe pod lifecycle events.",
+            "View running pod logs.",
+            "Execute `ls` inside a pod.",
+            "Delete a pod manually.",
+            "Create multi-container pod (App+Logger).",
+            "Check specific container logs.",
+            "Get pod details in JSON.",
+            "Use `watch` to monitor status.",
+            "Delete all pods in namespace.",
+            "Set default namespace context."
+        ],
+        lab: {
+            title: "The 'Ghost' Pod",
+            scenario: "A developer created a pod manually, but it keeps disappearing after they delete it (or so they think). You need to prove that pods are ephemeral.",
+            steps: "Create a pod, write a temporary file to `/tmp`, delete the pod, and recreate it. Verify the file is gone. This reinforces that Pods are not persistent."
+        },
+        commands: [
+            { cmd: "kubectl run <name> --image=<image>", desc: "Create a pod" },
+            { cmd: "kubectl get pods", desc: "List pods" },
+            { cmd: "kubectl describe pod <name>", desc: "Deep dive into status" },
+            { cmd: "kubectl logs <name>", desc: "Fetch logs" },
+            { cmd: "kubectl delete pod <name>", desc: "Terminate pod" }
+        ],
+        resources: [
+            { name: "Kubernetes Basics", url: "https://kubernetes.io/docs/tutorials/kubernetes-basics/" },
+            { name: "K8s Architecture", url: "https://kubernetes.io/docs/concepts/overview/components/" }
+        ]
+    },
+    {
+        day: 2,
+        title: "Controllers & Scalability",
+        domain: "Workloads",
+        focus: "Managing multiple pods, scaling, and self-healing.",
+        concepts: [
+            "ReplicaSet: Ensures a specific number of pod copies run.",
+            "Deployment: Manages ReplicaSets and provides updates.",
+            "Labels & Selectors: How K8s groups resources.",
+            "Rolling Updates: Updating apps with zero downtime.",
+            "Rollbacks: Reverting to a previous stable version.",
+            "Scaling: Increasing/Decreasing replicas manually.",
+            "Stateless Applications: Apps that don't save client data locally.",
+            "Dry Run: Simulating a command before execution.",
+            "Recreate Strategy: Terminate all then create new (vs Rolling).",
+            "Revision History: Tracking deployment changes."
+        ],
+        tasks: [
+            "Create a Deployment YAML for Nginx with 3 replicas.",
+            "Apply the deployment and watch pods spin up.",
+            "Delete a pod manually and watch it respawn (Self-healing).",
+            "Scale the deployment to 5 replicas.",
+            "Scale down to 2 replicas.",
+            "Update the image version (e.g., nginx:1.14.2 to 1.16.1).",
+            "Check rollout status.",
+            "Perform a Rollback to the previous version.",
+            "Use labels to filter `get pods` (e.g., `app=nginx`).",
+            "Generate YAML without creating resource (--dry-run=client)."
+        ],
+        lab: {
+            title: "The Hydra",
+            scenario: "Your application is under heavy load. Every time a crash occurs, you need the system to recover instantly.",
+            steps: "Deploy an app with 3 replicas. Open a second terminal running `kubectl get pods -w`. Manually delete one pod. Observe the ReplicaSet instantly creating a new one to maintain the desired state."
+        },
+        commands: [
+            { cmd: "kubectl create deployment <name> --image=<imgname>", desc: "Create deployment" },
+            { cmd: "kubectl scale deployment <name> --replicas=3", desc: "Scale manually" },
+            { cmd: "kubectl set image deployment/<name> <container>=<new-image>", desc: "Update image" },
+            { cmd: "kubectl rollout status deployment/<name>", desc: "Check update progress" },
+            { cmd: "kubectl rollout undo deployment/<name>", desc: "Revert update" }
+        ],
+        resources: [
+            { name: "Deployments", url: "https://kubernetes.io/docs/concepts/workloads/controllers/deployment/" },
+            { name: "Labels and Selectors", url: "https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/" }
+        ]
+    },
+    {
+        day: 3,
+        title: "Networking & Service Discovery",
+        domain: "Networking",
+        focus: "Exposing applications and internal communication.",
+        concepts: [
+            "Service (SVC): Stable IP/DNS for a set of pods.",
+            "ClusterIP: Internal-only access (Default).",
+            "NodePort: Exposes service on a static port on each node.",
+            "LoadBalancer: Connects to Cloud Provider LB.",
+            "CoreDNS: Internal DNS resolution.",
+            "Endpoints: The list of Pod IPs a service targets.",
+            "TargetPort vs Port: Container port vs Service port.",
+            "Service Discovery: Finding services via DNS names.",
+            "Kube-proxy (Review): How it implements services."
+        ],
+        tasks: [
+            "Create a ClusterIP service for your deployment.",
+            "Run a temporary pod (`busybox`) and `nslookup` the service.",
+            "Curl the service from another pod.",
+            "Change Service type to NodePort.",
+            "Access the app via `NodeIP:NodePort`.",
+            "Inspect Endpoints object (`kubectl get endpoints`).",
+            "Filter services by namespace.",
+            "Create a service imperatively.",
+            "Understand the DNS naming convention (`svc.namespace.svc.cluster.local`)."
+        ],
+        lab: {
+            title: "The Internal Phonebook",
+            scenario: "Frontend pods need to talk to Backend pods, but Backend pod IPs change constantly.",
+            steps: "Deploy 'Frontend' and 'Backend'. Create a Service for Backend. Configure Frontend to curl `http://backend-service`. Delete Backend pods to force IP changes. Verify Frontend can still reach Backend via the Service name."
+        },
+        commands: [
+            { cmd: "kubectl expose deployment <name> --port=80", desc: "Expose as Service" },
+            { cmd: "kubectl get svc", desc: "List services" },
+            { cmd: "kubectl describe svc <name>", desc: "Check service config" },
+            { cmd: "kubectl get endpoints", desc: "See backend pod IPs" },
+            { cmd: "kubectl port-forward svc/<name> 8080:80", desc: "Localhost access" }
+        ],
+        resources: [
+            { name: "Service", url: "https://kubernetes.io/docs/concepts/services-networking/service/" },
+            { name: "DNS for Services", url: "https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/" }
+        ]
+    },
+    {
+        day: 4,
+        title: "Configuration & Secrets",
+        domain: "Configuration",
+        focus: "Decoupling configuration from container images.",
+        concepts: [
+            "ConfigMap: Storing non-sensitive config data.",
+            "Secret: Storing sensitive data (passwords, keys).",
+            "Environment Variables: Injecting config into pods.",
+            "Volume Mounting: Mounting config as files.",
+            "Secret Types: Opaque, docker-registry, TLS.",
+            "Base64 Encoding: How secrets are stored (not encrypted!).",
+            "Immutable Config: Preventing changes to live config.",
+            "Dotfiles: Hidden config files."
+        ],
+        tasks: [
+            "Create a ConfigMap from a literal value.",
+            "Create a ConfigMap from a file (e.g., nginx.conf).",
+            "Inject ConfigMap as Environment Variable in Pod.",
+            "Mount ConfigMap as a volume in Pod.",
+            "Create a Secret manually.",
+            "Decode a Secret using base64.",
+            "Inject Secret as Env Var.",
+            "Mount Secret as a volume.",
+            "Update ConfigMap and verify volume update (latency).",
+            "Create Docker Registry secret."
+        ],
+        lab: {
+            title: "The Shapeshifter",
+            scenario: "You need to change the background color of a web app without rebuilding the Docker image.",
+            steps: "Deploy a web app that reads `BG_COLOR` from env. Create a ConfigMap `color=blue`. Map it to the pod. Change ConfigMap to `color=green`. Restart pod (or wait for volume sync) to see the app change."
+        },
+        commands: [
+            { cmd: "kubectl create cm <name> --from-literal=k=v", desc: "Create ConfigMap" },
+            { cmd: "kubectl create secret generic <name> --from-literal=pwd=123", desc: "Create Secret" },
+            { cmd: "kubectl get cm,secret", desc: "List configs" },
+            { cmd: "echo 'text' | base64", desc: "Linux base64 encode" },
+            { cmd: "kubectl explain pod.spec.containers.env", desc: "Find env syntax" }
+        ],
+        resources: [
+            { name: "ConfigMaps", url: "https://kubernetes.io/docs/concepts/configuration/configmap/" },
+            { name: "Secrets", url: "https://kubernetes.io/docs/concepts/configuration/secret/" }
+        ]
+    },
+    {
+        day: 5,
+        title: "Storage & Persistence",
+        domain: "Storage",
+        focus: "Managing stateful data that survives pod restarts.",
+        concepts: [
+            "Volumes: Directory accessible to containers in a pod.",
+            "PersistentVolume (PV): Storage resource in the cluster.",
+            "PersistentVolumeClaim (PVC): Request for storage by a user.",
+            "StorageClass: Dynamic provisioning of storage.",
+            "Access Modes: RWO (ReadWriteOnce), ROX, RWX.",
+            "HostPath: Mounting node filesystem (Dev only).",
+            "emptyDir: Temporary storage (cache).",
+            "Reclaim Policy: Retain, Recycle, Delete.",
+            "CSI: Container Storage Interface."
+        ],
+        tasks: [
+            "Create a Pod with `emptyDir` volume.",
+            "Write data, restart container, verify data exists.",
+            "Delete Pod, verify `emptyDir` is gone.",
+            "Create a StorageClass (or use default).",
+            "Create a PVC requesting 1Gi storage.",
+            "Mount PVC to a Pod (e.g., MySQL).",
+            "Write data to the database.",
+            "Delete the Pod.",
+            "Recreate Pod, verify data persists.",
+            "Inspect PV and PVC Binding."
+        ],
+        lab: {
+            title: "The Digital Safe",
+            scenario: "A database pod crashes. When it comes back up, the user data must still be there.",
+            steps: "Deploy a simple writer app that appends the timestamp to a file in `/data`. Use a PVC for `/data`. Delete the pod. New pod starts. Check the file; previous timestamps should remain."
+        },
+        commands: [
+            { cmd: "kubectl get pv,pvc", desc: "List storage resources" },
+            { cmd: "kubectl get sc", desc: "List storage classes" },
+            { cmd: "kubectl describe pvc <name>", desc: "Check binding status" },
+            { cmd: "kubectl patch pvc ...", desc: "Modify PVC" }
+        ],
+        resources: [
+            { name: "Persistent Volumes", url: "https://kubernetes.io/docs/concepts/storage/persistent-volumes/" },
+            { name: "Storage Classes", url: "https://kubernetes.io/docs/concepts/storage/storage-classes/" }
+        ]
+    },
+    {
+        day: 6,
+        title: "Advanced Workloads",
+        domain: "Workloads",
+        focus: "Specialized controllers for stateful and system apps.",
+        concepts: [
+            "DaemonSet: Runs one pod per node (Logs/Monitoring).",
+            "StatefulSet: Ordered, unique pods (Databases).",
+            "Headless Service: Service without IP, for DNS identity.",
+            "Job: Run to completion (Batch tasks).",
+            "CronJob: Scheduled tasks.",
+            "Stable Network ID: pod-0, pod-1 naming.",
+            "Ordered Graceful Deployment: Sequential scaling."
+        ],
+        tasks: [
+            "Create a DaemonSet (e.g., Fluentd).",
+            "Verify one pod runs on every node.",
+            "Create a StatefulSet (e.g., Redis).",
+            "Observe naming convention (web-0, web-1).",
+            "Scale StatefulSet and watch sequential creation.",
+            "Create a Job that calculates Pi.",
+            "Check Job logs after completion.",
+            "Create a CronJob that runs every minute.",
+            "Suspend a CronJob."
+        ],
+        lab: {
+            title: "The Ordered Lineup",
+            scenario: "You are deploying a primary-replica database. The primary (db-0) must exist before the replica (db-1) starts.",
+            steps: "Deploy a StatefulSet. Watch `kubectl get pods -w`. Notice `db-1` does not start until `db-0` is fully Ready. Delete `db-0` and watch it reclaim its specific identity."
+        },
+        commands: [
+            { cmd: "kubectl create job <name> --image=busybox", desc: "Create Job" },
+            { cmd: "kubectl get cronjobs", desc: "List scheduled jobs" },
+            { cmd: "kubectl get statefulsets", desc: "List StatefulSets" },
+            { cmd: "kubectl get ds", desc: "List DaemonSets" }
+        ],
+        resources: [
+            { name: "StatefulSets", url: "https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/" },
+            { name: "DaemonSets", url: "https://kubernetes.io/docs/concepts/workloads/controllers/daemonset/" }
+        ]
+    },
+    {
+        day: 7,
+        title: "Observability & Probes",
+        domain: "Operations",
+        focus: "Monitoring health and debugging issues.",
+        concepts: [
+            "Liveness Probe: Restarts pod if app deadlocked.",
+            "Readiness Probe: Removes pod from Service if busy/starting.",
+            "Startup Probe: Delays other probes for slow starters.",
+            "Metrics Server: Aggregates resource usage.",
+            "Container Logs: Stdout/Stderr.",
+            "Events: Cluster-level occurrences.",
+            "Port Forwarding: Debugging locally.",
+            "Exec: Shell access.",
+            "Ephemeral Containers: Debugging distroless images."
+        ],
+        tasks: [
+            "Add a Liveness probe to a pod.",
+            "Simulate app failure (delete file checked by probe).",
+            "Watch K8s restart the pod.",
+            "Add a Readiness probe.",
+            "Simulate load; fail readiness.",
+            "Verify Service endpoints remove the pod IP.",
+            "Install Metrics Server (if needed).",
+            "Run `kubectl top nodes` and `top pods`.",
+            "View events for a namespace.",
+            "Debug a CrashLoopBackOff."
+        ],
+        lab: {
+            title: "The Broken Loop",
+            scenario: "An app starts but crashes immediately. Another runs but returns 500 errors.",
+            steps: "Debug a provided 'broken' manifest. Use `kubectl logs`, `kubectl describe`, and `kubectl get events` to find the root cause (e.g., missing secret, wrong command, failing probe) and fix it."
+        },
+        commands: [
+            { cmd: "kubectl top pods", desc: "Check CPU/RAM usage" },
+            { cmd: "kubectl logs <pod> -c <container> --previous", desc: "Logs of crashed instance" },
+            { cmd: "kubectl get events --sort-by=.metadata.creationTimestamp", desc: "Chronological events" },
+            { cmd: "kubectl describe pod <name>", desc: "Check probe failure events" }
+        ],
+        resources: [
+            { name: "Configure Liveness/Readiness", url: "https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/" },
+            { name: "Troubleshooting", url: "https://kubernetes.io/docs/tasks/debug/" }
+        ]
+    },
+    {
+        day: 8,
+        title: "Security & RBAC",
+        domain: "Security",
+        focus: "Controlling access to the cluster and resources.",
+        concepts: [
+            "RBAC: Role-Based Access Control.",
+            "Role: Permissions within a namespace.",
+            "ClusterRole: Permissions cluster-wide.",
+            "RoleBinding: Assigning Role to User/SA.",
+            "ClusterRoleBinding: Assigning ClusterRole.",
+            "ServiceAccount (SA): Identity for Pods.",
+            "SecurityContext: User IDs, Capabilities (Linux).",
+            "NetworkPolicies: Firewall for Pods.",
+            "Least Privilege: Security best practice."
+        ],
+        tasks: [
+            "Create a ServiceAccount.",
+            "Create a Role (can only `list` pods).",
+            "Bind Role to ServiceAccount.",
+            "Run a pod using that ServiceAccount.",
+            "Test access using `kubectl auth can-i`.",
+            "Create a NetworkPolicy (deny all traffic).",
+            "Allow traffic only from specific pod.",
+            "Run pod as non-root user (SecurityContext).",
+            "Mount API token into pod."
+        ],
+        lab: {
+            title: "The Bouncer",
+            scenario: "The `db` pod should only accept connections from `backend`, not `frontend` or `external`.",
+            steps: "Apply a 'Default Deny' NetworkPolicy. Try to ping DB from Backend (fails). Create an 'Allow' policy specifically selecting Backend's labels. Verify connectivity is restored only for Backend."
+        },
+        commands: [
+            { cmd: "kubectl create sa <name>", desc: "Create ServiceAccount" },
+            { cmd: "kubectl create role <name> --verb=get --resource=pods", desc: "Create Role" },
+            { cmd: "kubectl create rolebinding <name> --role=<role> --serviceaccount=<ns:sa>", desc: "Bind Role" },
+            { cmd: "kubectl auth can-i get pods --as=system:serviceaccount:<ns>:<name>", desc: "Test permissions" }
+        ],
+        resources: [
+            { name: "Using RBAC", url: "https://kubernetes.io/docs/reference/access-authn-authz/rbac/" },
+            { name: "Network Policies", url: "https://kubernetes.io/docs/concepts/services-networking/network-policies/" }
+        ]
+    },
+    {
+        day: 9,
+        title: "Helm & Package Management",
+        domain: "Automation",
+        focus: "Managing complex applications as packages.",
+        concepts: [
+            "Helm: The package manager for K8s.",
+            "Chart: A package (collection of YAMLs).",
+            "Release: An instance of a chart.",
+            "Repository: Where charts are stored.",
+            "Values.yaml: Custom configuration for charts.",
+            "Templates: Dynamic YAML generation (Go templates).",
+            "Helm Install/Upgrade/Rollback: Lifecycle management.",
+            "Chart.yaml: Metadata."
+        ],
+        tasks: [
+            "Install Helm CLI.",
+            "Add a Helm repo (e.g., Bitnami).",
+            "Search for a chart (e.g., Nginx, MySQL).",
+            "Install a chart with default values.",
+            "List releases.",
+            "Upgrade a release with new values (change replica count).",
+            "Rollback a release.",
+            "Create a starter chart (`helm create`).",
+            "Render templates locally (`helm template`).",
+            "Uninstall a release."
+        ],
+        lab: {
+            title: "The Storefront",
+            scenario: "You need to deploy Wordpress, but writing all the Deployment, Service, PVC, and Secret YAMLs manually is tedious.",
+            steps: "Use Helm to deploy Wordpress. Inspect the `values.yaml` to customize the blog title and admin password. Deploy it in one command. Upgrade the version without losing data."
+        },
+        commands: [
+            { cmd: "helm repo add <name> <url>", desc: "Add repository" },
+            { cmd: "helm install <release> <chart>", desc: "Install app" },
+            { cmd: "helm list", desc: "View installed apps" },
+            { cmd: "helm upgrade <release> <chart> -f values.yaml", desc: "Update config" },
+            { cmd: "helm uninstall <release>", desc: "Remove app" }
+        ],
+        resources: [
+            { name: "Helm Quickstart", url: "https://helm.sh/docs/intro/quickstart/" },
+            { name: "Artifact Hub", url: "https://artifacthub.io/" }
+        ]
+    },
+    {
+        day: 10,
+        title: "Ingress & Advanced Networking",
+        domain: "Networking",
+        focus: "Routing external traffic into the cluster.",
+        concepts: [
+            "Ingress: HTTP/HTTPS routing rules.",
+            "Ingress Controller: The implementation (Nginx, Traefik).",
+            "Path Based Routing: /api vs /web.",
+            "Host Based Routing: foo.com vs bar.com.",
+            "TLS/SSL: Configuring certs.",
+            "Annotations: Configuring controller specific behavior.",
+            "Default Backend: Where unknown traffic goes.",
+            "IngressClass: Selecting the controller."
+        ],
+        tasks: [
+            "Enable Ingress Controller (minikube addons enable ingress).",
+            "Create two deployments (Apple & Banana).",
+            "Expose them as Services.",
+            "Create an Ingress resource.",
+            "Configure `/apple` to route to Apple Service.",
+            "Configure `/banana` to route to Banana Service.",
+            "Edit `/etc/hosts` to map local domain.",
+            "Test access via browser/curl.",
+            "Inspect Ingress Controller logs."
+        ],
+        lab: {
+            title: "The Traffic Cop",
+            scenario: "You have one IP address but need to host two different websites.",
+            steps: "Deploy 'Blue Site' and 'Green Site'. Create an Ingress rule so `blue.local` goes to Blue and `green.local` goes to Green. Verify the routing works seamlessly through the single entry point."
+        },
+        commands: [
+            { cmd: "kubectl get ingress", desc: "List ingress rules" },
+            { cmd: "kubectl describe ingress <name>", desc: "Check routing config" },
+            { cmd: "kubectl logs -n ingress-nginx <controller-pod>", desc: "Debug controller" },
+            { cmd: "curl -H 'Host: example.com' <ip>", desc: "Test host routing" }
+        ],
+        resources: [
+            { name: "Ingress", url: "https://kubernetes.io/docs/concepts/services-networking/ingress/" },
+            { name: "Nginx Ingress Controller", url: "https://kubernetes.github.io/ingress-nginx/" }
+        ]
+    },
+    {
+        day: 11,
+        title: "Scheduling & Resource Management",
+        domain: "Optimization",
+        focus: "Controlling exactly where pods run and how much they consume.",
+        concepts: [
+            "Requests: Minimum resources guaranteed.",
+            "Limits: Maximum resources allowed (OOMKill).",
+            "NodeSelector: Simple node selection.",
+            "Node Affinity: Complex node selection logic.",
+            "Taints: Node repelling pods.",
+            "Tolerations: Pods ignoring taints.",
+            "Pod Affinity: Pods wanting to be near other pods.",
+            "QoS Classes: Guaranteed, Burstable, BestEffort.",
+            "LimitRange/ResourceQuota: Namespace limits."
+        ],
+        tasks: [
+            "Set CPU/Memory requests on a pod.",
+            "Set Limits (try to exceed them and watch OOMKill).",
+            "Label a node (e.g., `gpu=true`).",
+            "Use NodeSelector to schedule pod on labeled node.",
+            "Taint a node (e.g., `env=prod:NoSchedule`).",
+            "Try to schedule a standard pod (Pending state).",
+            "Add Toleration to pod to bypass taint.",
+            "Configure Namespace ResourceQuota.",
+            "Understand Pod priority."
+        ],
+        lab: {
+            title: "The VIP Lounge",
+            scenario: "You have a dedicated high-performance node. Only critical 'Gold' workloads should run there. No 'Silver' workloads allowed.",
+            steps: "Taint the high-perf node. Deploy a 'Silver' pod (it stays Pending or goes to other nodes). Deploy a 'Gold' pod with the correct toleration. Verify 'Gold' is the only one enjoying the high-performance node."
+        },
+        commands: [
+            { cmd: "kubectl taint nodes <node> key=value:NoSchedule", desc: "Add taint" },
+            { cmd: "kubectl label nodes <node> key=value", desc: "Add label" },
+            { cmd: "kubectl describe node <name>", desc: "Check usage/taints" },
+            { cmd: "kubectl get pods -o wide", desc: "See which node pods are on" }
+        ],
+        resources: [
+            { name: "Taints and Tolerations", url: "https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/" },
+            { name: "Resource Management", url: "https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/" }
+        ]
+    },
+    {
+        day: 12,
+        title: "Ecosystem & The Future",
+        domain: "Advanced",
+        focus: "Extending K8s and modern deployment practices.",
+        concepts: [
+            "CRD (Custom Resource Definition): Extending the API.",
+            "Operators: Automated software managers (Prometheus, Postgres).",
+            "GitOps: Infrastructure as Code (ArgoCD, Flux).",
+            "Service Mesh: Traffic management (Istio, Linkerd).",
+            "Cilium/eBPF: Advanced Networking.",
+            "Serverless K8s: Knative.",
+            "Managed K8s: EKS (AWS), GKE (Google), AKS (Azure).",
+            "CI/CD Integration: Jenkins/GitLab with K8s."
+        ],
+        tasks: [
+            "Explore existing CRDs (`kubectl get crd`).",
+            "Install a simple Operator (e.g., Prometheus Operator).",
+            "Create an instance of a Custom Resource.",
+            "Read about ArgoCD architecture.",
+            "Simulate GitOps (apply manifest from a Git URL).",
+            "Review the 12-Factor App methodology.",
+            "Explore the CNCF Landscape.",
+            "Plan a migration path for a legacy app."
+        ],
+        lab: {
+            title: "The Autopilot",
+            scenario: "You want a database, but managing backups, failover, and configuration is hard. You want a robot to do it.",
+            steps: "Install a Database Operator (like Postgres Operator). Create a simple YAML asking for a 'PostgresCluster'. Watch the Operator automatically spawn the Service, StatefulSet, Secrets, and Backup Jobs without you defining them manually."
+        },
+        commands: [
+            { cmd: "kubectl get crd", desc: "List Custom Definitions" },
+            { cmd: "kubectl get all -n <operator-ns>", desc: "See operator resources" },
+            { cmd: "kubectl api-resources", desc: "List all available APIs" }
+        ],
+        resources: [
+            { name: "CNCF Landscape", url: "https://landscape.cncf.io/" },
+            { name: "Operator Hub", url: "https://operatorhub.io/" },
+            { name: "ArgoCD", url: "https://argo-cd.readthedocs.io/en/stable/" }
+        ]
+    }
+];
 
         // State Management
         let currentState = {
