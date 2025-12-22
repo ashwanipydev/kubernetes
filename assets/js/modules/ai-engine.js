@@ -3,7 +3,7 @@
  * Handles interactions with the Gemini API for tutoring and explanations
  */
 
-const apiKey = ""; // Managed by environment
+const apiKey = "AIzaSyCf41SuxtUadVSwtbyZ1dBazNXHnyj22yU"; // Managed by environment
 const MODEL_NAME = "gemini-2.5-flash-preview-09-2025";
 
 /**
