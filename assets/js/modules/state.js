@@ -70,7 +70,7 @@ export let state = {
     completedDays: new Set(),
     completedConcepts: new Set(),
     userProfile: { level: 'beginner', style: 'practical' },
-    isAIExplaining: false // UI state for loading indicators
+    isAIExplaining: false
 };
 
 export function loadSavedState() {

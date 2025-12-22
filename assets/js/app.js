@@ -53,11 +53,10 @@ async function initApp() {
         explainConcept: async (conceptName) => {
             try {
                 setAILoading(true);
-                this.updateAILoaderUI(true);
+                window.app.updateAILoaderUI(true);
                 
                 const explanation = await ai.explainConcept(conceptName, state.userProfile.level);
                 
-                // You can call a UI function here to display the explanation in a modal
                 console.log(`AI Explanation for ${conceptName}:`, explanation);
                 
                 return explanation;
@@ -65,11 +64,11 @@ async function initApp() {
                 console.error("AI Assistant Error:", error);
             } finally {
                 setAILoading(false);
-                this.updateAILoaderUI(false);
+                window.app.updateAILoaderUI(false);
             }
         },
 
-        state // Access to current state (Set of completed days, etc.)
+        state // Access to current state
     };
 
     /**

@@ -18,6 +18,7 @@ async function callGemini(prompt, systemInstruction = "") {
     };
 
     let delay = 1000;
+
     for (let i = 0; i < 5; i++) {
         try {
             const response = await fetch(url, {
@@ -26,13 +27,19 @@ async function callGemini(prompt, systemInstruction = "") {
                 body: JSON.stringify(payload)
             });
 
-            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
             
             const result = await response.json();
             return result.candidates?.[0]?.content?.parts?.[0]?.text;
+
         } catch (error) {
+
             if (i === 4) throw error;
+
             await new Promise(resolve => setTimeout(resolve, delay));
+
             delay *= 2;
         }
     }
@@ -43,8 +50,8 @@ async function callGemini(prompt, systemInstruction = "") {
  */
 export async function explainConcept(concept, level = 'beginner') {
     const systemPrompt = `You are an expert Kubernetes Tutor. 
-    Explain concepts simply for a ${level} level learner. 
-    Use analogies where possible. Keep it concise but technicaly accurate.`;
+Explain concepts simply for a ${level} level learner. 
+Use analogies where possible. Keep it concise but technically accurate.`;
     
     const userPrompt = `Explain the following Kubernetes concept in detail: ${concept}`;
     
@@ -56,8 +63,8 @@ export async function explainConcept(concept, level = 'beginner') {
  */
 export async function generatePracticeProblem(topic) {
     const systemPrompt = `You are a CKA/CKAD examiner. 
-    Create a practical, hands-on scenario for the user to solve. 
-    Include: 1. Objective, 2. Requirements, 3. A hint.`;
+Create a practical, hands-on scenario for the user to solve. 
+Include: 1. Objective, 2. Requirements, 3. A hint.`;
     
     const userPrompt = `Generate a practice problem for: ${topic}`;
     
@@ -69,8 +76,8 @@ export async function generatePracticeProblem(topic) {
  */
 export async function askAssistant(question, context = "") {
     const systemPrompt = `You are the K8s Mastery Pro Assistant. 
-    You help users navigate their 30-day Kubernetes journey. 
-    Context of current lesson: ${context}`;
+You help users navigate their 30-day Kubernetes journey. 
+Context: ${context}`;
     
     return await callGemini(question, systemPrompt);
 }
