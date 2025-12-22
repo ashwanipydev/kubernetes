@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>K8s</title>
+    <title>K8s Mastery Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -15,7 +16,14 @@
                         stone: {
                             850: '#211f1d',
                             950: '#0c0a09',
+                        },
+                        sky: {
+                            950: '#082f49',
                         }
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s ease-in-out infinite',
+                        'float': 'float 6s ease-in-out infinite',
                     }
                 }
             }
@@ -70,8 +78,8 @@
         }
 
         .card-hover:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
         }
 
         .terminal-window {
@@ -89,6 +97,43 @@
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .gradient-bg {
+            background: linear-gradient(135deg, #0ea5e9 0%, #6366f1 100%);
+        }
+
+        .ai-chat-bubble {
+            border-radius: 18px 18px 18px 4px;
+            max-width: 80%;
+        }
+
+        .user-chat-bubble {
+            border-radius: 18px 18px 4px 18px;
+            max-width: 80%;
+            margin-left: auto;
+        }
+
+        .concept-card {
+            background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+        }
+
+        .dark .concept-card {
+            background: linear-gradient(145deg, #1c1917 0%, #292524 100%);
+        }
+
+        .pulse-ring {
+            animation: pulse-ring 2s cubic-bezier(0.215, 0.610, 0.355, 1) infinite;
+        }
+
+        @keyframes pulse-ring {
+            0% { transform: scale(0.8); opacity: 0.8; }
+            80%, 100% { transform: scale(1.5); opacity: 0; }
+        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col bg-stone-50 text-stone-900 dark:bg-stone-950 dark:text-stone-100">
@@ -99,14 +144,15 @@
             <div class="flex justify-between h-16">
                 <div class="flex items-center cursor-pointer overflow-hidden" onclick="renderDashboard()">
                     <span class="text-xl sm:text-2xl mr-2">☸️</span>
-                    <span class="font-bold text-lg sm:text-xl tracking-tight text-stone-800 dark:text-stone-100 truncate">K8s Mastery</span>
+                    <span class="font-bold text-lg sm:text-xl tracking-tight text-stone-800 dark:text-stone-100 truncate">K8s Mastery Pro</span>
                 </div>
                 <div class="flex items-center space-x-2 sm:space-x-4">
                     <button id="theme-toggle" class="p-2 rounded-lg bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 transition-colors">
                         <span id="theme-toggle-icon">🌙</span>
                     </button>
-                    <button onclick="renderDashboard()" class="text-stone-600 dark:text-stone-400 hover:text-sky-600 dark:hover:text-sky-400 font-medium transition-colors text-sm sm:text-base">Dashboard</button>
-                    <div class="hidden xs:block text-xs sm:text-sm text-stone-500 font-mono" id="progress-display">Day 0/12</div>
+                    <button onclick="renderDashboard()" class="text-stone-600 dark:text-stone-400 hover:text-sky-600 dark:hover:text-sky-400 font-medium transition-colors text-sm sm:text-base hidden md:block">Dashboard</button>
+                    <button onclick="renderAIAssistant()" class="text-stone-600 dark:text-stone-400 hover:text-sky-600 dark:hover:text-sky-400 font-medium transition-colors text-sm sm:text-base hidden md:block">AI Assistant</button>
+                    <div class="text-xs sm:text-sm text-stone-500 font-mono hidden xs:block" id="progress-display">Day 0/12</div>
                 </div>
             </div>
         </div>
@@ -122,561 +168,248 @@
     <!-- Footer -->
     <footer class="bg-stone-100 dark:bg-stone-900 border-t border-stone-200 dark:border-stone-800 mt-auto transition-colors">
         <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 text-center">
-            <p class="text-stone-500 dark:text-stone-400 text-sm">Interactive 12-Day DevOps Job-Ready Plan</p>
+            <p class="text-stone-500 dark:text-stone-400 text-sm">Interactive 12-Day DevOps Job-Ready Plan with AI-Powered Learning</p>
+            <div class="mt-2 flex justify-center space-x-4">
+                <a href="#" class="text-xs text-stone-400 hover:text-sky-600">GitHub</a>
+                <a href="#" class="text-xs text-stone-400 hover:text-sky-600">Discord</a>
+                <a href="#" class="text-xs text-stone-400 hover:text-sky-600">Report Issue</a>
+            </div>
         </div>
     </footer>
 
     <script>
-       // --- Data Storage ---
+        // --- Enhanced Data Structure with Detailed Concepts ---
         const k8sData = [
-    {
-        day: 1,
-        title: "The Foundation - Architecture & Pods",
-        domain: "Core",
-        focus: "Understanding why K8s exists and the smallest unit of deployment.",
-        concepts: [
-            "Container Orchestration: Managing the lifecycle of containers.",
-            "Control Plane: The 'brains' (API Server, Scheduler, etc.).",
-            "Worker Nodes: Where applications run.",
-            "Kube-apiserver: Entry point for REST commands.",
-            "Etcd: Distributed key-value store.",
-            "Kube-scheduler: Assigns pods to nodes.",
-            "Kube-controller-manager: Handles cluster functions.",
-            "Kubelet: Node agent ensuring containers run.",
-            "Kube-proxy: Host networking & load balancing.",
-            "Pod: Smallest deployable unit.",
-            "Sidecar Pattern: Helper container alongside main app.",
-            "YAML: Language for K8s objects.",
-            "Declarative vs Imperative: What vs. How.",
-            "Namespace: Virtual clusters.",
-            "Context: Cluster + User + Namespace.",
-            "Nodes: Physical/Virtual machines.",
-            "Container Runtime: Docker/containerd.",
-            "Minikube/Kind: Local K8s cluster.",
-            "Manifest: File describing desired state.",
-            "Desired State: K8s matching current to desired."
-        ],
-        tasks: [
-            "Install kind/minikube and Kubectl.",
-            "Start a cluster.",
-            "Check cluster status `kubectl cluster-info`.",
-            "Create namespace `dev-team`.",
-            "List all namespaces.",
-            "Run Nginx pod imperatively.",
-            "Create Nginx pod via YAML.",
-            "List pods in default namespace.",
-            "List pods in `dev-team`.",
-            "Describe pod lifecycle events.",
-            "View running pod logs.",
-            "Execute `ls` inside a pod.",
-            "Delete a pod manually.",
-            "Create multi-container pod (App+Logger).",
-            "Check specific container logs.",
-            "Get pod details in JSON.",
-            "Use `watch` to monitor status.",
-            "Delete all pods in namespace.",
-            "Set default namespace context."
-        ],
-        lab: {
-            title: "The 'Ghost' Pod",
-            scenario: "A developer created a pod manually, but it keeps disappearing after they delete it (or so they think). You need to prove that pods are ephemeral.",
-            steps: "Create a pod, write a temporary file to `/tmp`, delete the pod, and recreate it. Verify the file is gone. This reinforces that Pods are not persistent."
-        },
-        commands: [
-            { cmd: "kubectl run <name> --image=<image>", desc: "Create a pod" },
-            { cmd: "kubectl get pods", desc: "List pods" },
-            { cmd: "kubectl describe pod <name>", desc: "Deep dive into status" },
-            { cmd: "kubectl logs <name>", desc: "Fetch logs" },
-            { cmd: "kubectl delete pod <name>", desc: "Terminate pod" }
-        ],
-        resources: [
-            { name: "Kubernetes Basics", url: "https://kubernetes.io/docs/tutorials/kubernetes-basics/" },
-            { name: "K8s Architecture", url: "https://kubernetes.io/docs/concepts/overview/components/" }
-        ]
-    },
-    {
-        day: 2,
-        title: "Controllers & Scalability",
-        domain: "Workloads",
-        focus: "Managing multiple pods, scaling, and self-healing.",
-        concepts: [
-            "ReplicaSet: Ensures a specific number of pod copies run.",
-            "Deployment: Manages ReplicaSets and provides updates.",
-            "Labels & Selectors: How K8s groups resources.",
-            "Rolling Updates: Updating apps with zero downtime.",
-            "Rollbacks: Reverting to a previous stable version.",
-            "Scaling: Increasing/Decreasing replicas manually.",
-            "Stateless Applications: Apps that don't save client data locally.",
-            "Dry Run: Simulating a command before execution.",
-            "Recreate Strategy: Terminate all then create new (vs Rolling).",
-            "Revision History: Tracking deployment changes."
-        ],
-        tasks: [
-            "Create a Deployment YAML for Nginx with 3 replicas.",
-            "Apply the deployment and watch pods spin up.",
-            "Delete a pod manually and watch it respawn (Self-healing).",
-            "Scale the deployment to 5 replicas.",
-            "Scale down to 2 replicas.",
-            "Update the image version (e.g., nginx:1.14.2 to 1.16.1).",
-            "Check rollout status.",
-            "Perform a Rollback to the previous version.",
-            "Use labels to filter `get pods` (e.g., `app=nginx`).",
-            "Generate YAML without creating resource (--dry-run=client)."
-        ],
-        lab: {
-            title: "The Hydra",
-            scenario: "Your application is under heavy load. Every time a crash occurs, you need the system to recover instantly.",
-            steps: "Deploy an app with 3 replicas. Open a second terminal running `kubectl get pods -w`. Manually delete one pod. Observe the ReplicaSet instantly creating a new one to maintain the desired state."
-        },
-        commands: [
-            { cmd: "kubectl create deployment <name> --image=<imgname>", desc: "Create deployment" },
-            { cmd: "kubectl scale deployment <name> --replicas=3", desc: "Scale manually" },
-            { cmd: "kubectl set image deployment/<name> <container>=<new-image>", desc: "Update image" },
-            { cmd: "kubectl rollout status deployment/<name>", desc: "Check update progress" },
-            { cmd: "kubectl rollout undo deployment/<name>", desc: "Revert update" }
-        ],
-        resources: [
-            { name: "Deployments", url: "https://kubernetes.io/docs/concepts/workloads/controllers/deployment/" },
-            { name: "Labels and Selectors", url: "https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/" }
-        ]
-    },
-    {
-        day: 3,
-        title: "Networking & Service Discovery",
-        domain: "Networking",
-        focus: "Exposing applications and internal communication.",
-        concepts: [
-            "Service (SVC): Stable IP/DNS for a set of pods.",
-            "ClusterIP: Internal-only access (Default).",
-            "NodePort: Exposes service on a static port on each node.",
-            "LoadBalancer: Connects to Cloud Provider LB.",
-            "CoreDNS: Internal DNS resolution.",
-            "Endpoints: The list of Pod IPs a service targets.",
-            "TargetPort vs Port: Container port vs Service port.",
-            "Service Discovery: Finding services via DNS names.",
-            "Kube-proxy (Review): How it implements services."
-        ],
-        tasks: [
-            "Create a ClusterIP service for your deployment.",
-            "Run a temporary pod (`busybox`) and `nslookup` the service.",
-            "Curl the service from another pod.",
-            "Change Service type to NodePort.",
-            "Access the app via `NodeIP:NodePort`.",
-            "Inspect Endpoints object (`kubectl get endpoints`).",
-            "Filter services by namespace.",
-            "Create a service imperatively.",
-            "Understand the DNS naming convention (`svc.namespace.svc.cluster.local`)."
-        ],
-        lab: {
-            title: "The Internal Phonebook",
-            scenario: "Frontend pods need to talk to Backend pods, but Backend pod IPs change constantly.",
-            steps: "Deploy 'Frontend' and 'Backend'. Create a Service for Backend. Configure Frontend to curl `http://backend-service`. Delete Backend pods to force IP changes. Verify Frontend can still reach Backend via the Service name."
-        },
-        commands: [
-            { cmd: "kubectl expose deployment <name> --port=80", desc: "Expose as Service" },
-            { cmd: "kubectl get svc", desc: "List services" },
-            { cmd: "kubectl describe svc <name>", desc: "Check service config" },
-            { cmd: "kubectl get endpoints", desc: "See backend pod IPs" },
-            { cmd: "kubectl port-forward svc/<name> 8080:80", desc: "Localhost access" }
-        ],
-        resources: [
-            { name: "Service", url: "https://kubernetes.io/docs/concepts/services-networking/service/" },
-            { name: "DNS for Services", url: "https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/" }
-        ]
-    },
-    {
-        day: 4,
-        title: "Configuration & Secrets",
-        domain: "Configuration",
-        focus: "Decoupling configuration from container images.",
-        concepts: [
-            "ConfigMap: Storing non-sensitive config data.",
-            "Secret: Storing sensitive data (passwords, keys).",
-            "Environment Variables: Injecting config into pods.",
-            "Volume Mounting: Mounting config as files.",
-            "Secret Types: Opaque, docker-registry, TLS.",
-            "Base64 Encoding: How secrets are stored (not encrypted!).",
-            "Immutable Config: Preventing changes to live config.",
-            "Dotfiles: Hidden config files."
-        ],
-        tasks: [
-            "Create a ConfigMap from a literal value.",
-            "Create a ConfigMap from a file (e.g., nginx.conf).",
-            "Inject ConfigMap as Environment Variable in Pod.",
-            "Mount ConfigMap as a volume in Pod.",
-            "Create a Secret manually.",
-            "Decode a Secret using base64.",
-            "Inject Secret as Env Var.",
-            "Mount Secret as a volume.",
-            "Update ConfigMap and verify volume update (latency).",
-            "Create Docker Registry secret."
-        ],
-        lab: {
-            title: "The Shapeshifter",
-            scenario: "You need to change the background color of a web app without rebuilding the Docker image.",
-            steps: "Deploy a web app that reads `BG_COLOR` from env. Create a ConfigMap `color=blue`. Map it to the pod. Change ConfigMap to `color=green`. Restart pod (or wait for volume sync) to see the app change."
-        },
-        commands: [
-            { cmd: "kubectl create cm <name> --from-literal=k=v", desc: "Create ConfigMap" },
-            { cmd: "kubectl create secret generic <name> --from-literal=pwd=123", desc: "Create Secret" },
-            { cmd: "kubectl get cm,secret", desc: "List configs" },
-            { cmd: "echo 'text' | base64", desc: "Linux base64 encode" },
-            { cmd: "kubectl explain pod.spec.containers.env", desc: "Find env syntax" }
-        ],
-        resources: [
-            { name: "ConfigMaps", url: "https://kubernetes.io/docs/concepts/configuration/configmap/" },
-            { name: "Secrets", url: "https://kubernetes.io/docs/concepts/configuration/secret/" }
-        ]
-    },
-    {
-        day: 5,
-        title: "Storage & Persistence",
-        domain: "Storage",
-        focus: "Managing stateful data that survives pod restarts.",
-        concepts: [
-            "Volumes: Directory accessible to containers in a pod.",
-            "PersistentVolume (PV): Storage resource in the cluster.",
-            "PersistentVolumeClaim (PVC): Request for storage by a user.",
-            "StorageClass: Dynamic provisioning of storage.",
-            "Access Modes: RWO (ReadWriteOnce), ROX, RWX.",
-            "HostPath: Mounting node filesystem (Dev only).",
-            "emptyDir: Temporary storage (cache).",
-            "Reclaim Policy: Retain, Recycle, Delete.",
-            "CSI: Container Storage Interface."
-        ],
-        tasks: [
-            "Create a Pod with `emptyDir` volume.",
-            "Write data, restart container, verify data exists.",
-            "Delete Pod, verify `emptyDir` is gone.",
-            "Create a StorageClass (or use default).",
-            "Create a PVC requesting 1Gi storage.",
-            "Mount PVC to a Pod (e.g., MySQL).",
-            "Write data to the database.",
-            "Delete the Pod.",
-            "Recreate Pod, verify data persists.",
-            "Inspect PV and PVC Binding."
-        ],
-        lab: {
-            title: "The Digital Safe",
-            scenario: "A database pod crashes. When it comes back up, the user data must still be there.",
-            steps: "Deploy a simple writer app that appends the timestamp to a file in `/data`. Use a PVC for `/data`. Delete the pod. New pod starts. Check the file; previous timestamps should remain."
-        },
-        commands: [
-            { cmd: "kubectl get pv,pvc", desc: "List storage resources" },
-            { cmd: "kubectl get sc", desc: "List storage classes" },
-            { cmd: "kubectl describe pvc <name>", desc: "Check binding status" },
-            { cmd: "kubectl patch pvc ...", desc: "Modify PVC" }
-        ],
-        resources: [
-            { name: "Persistent Volumes", url: "https://kubernetes.io/docs/concepts/storage/persistent-volumes/" },
-            { name: "Storage Classes", url: "https://kubernetes.io/docs/concepts/storage/storage-classes/" }
-        ]
-    },
-    {
-        day: 6,
-        title: "Advanced Workloads",
-        domain: "Workloads",
-        focus: "Specialized controllers for stateful and system apps.",
-        concepts: [
-            "DaemonSet: Runs one pod per node (Logs/Monitoring).",
-            "StatefulSet: Ordered, unique pods (Databases).",
-            "Headless Service: Service without IP, for DNS identity.",
-            "Job: Run to completion (Batch tasks).",
-            "CronJob: Scheduled tasks.",
-            "Stable Network ID: pod-0, pod-1 naming.",
-            "Ordered Graceful Deployment: Sequential scaling."
-        ],
-        tasks: [
-            "Create a DaemonSet (e.g., Fluentd).",
-            "Verify one pod runs on every node.",
-            "Create a StatefulSet (e.g., Redis).",
-            "Observe naming convention (web-0, web-1).",
-            "Scale StatefulSet and watch sequential creation.",
-            "Create a Job that calculates Pi.",
-            "Check Job logs after completion.",
-            "Create a CronJob that runs every minute.",
-            "Suspend a CronJob."
-        ],
-        lab: {
-            title: "The Ordered Lineup",
-            scenario: "You are deploying a primary-replica database. The primary (db-0) must exist before the replica (db-1) starts.",
-            steps: "Deploy a StatefulSet. Watch `kubectl get pods -w`. Notice `db-1` does not start until `db-0` is fully Ready. Delete `db-0` and watch it reclaim its specific identity."
-        },
-        commands: [
-            { cmd: "kubectl create job <name> --image=busybox", desc: "Create Job" },
-            { cmd: "kubectl get cronjobs", desc: "List scheduled jobs" },
-            { cmd: "kubectl get statefulsets", desc: "List StatefulSets" },
-            { cmd: "kubectl get ds", desc: "List DaemonSets" }
-        ],
-        resources: [
-            { name: "StatefulSets", url: "https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/" },
-            { name: "DaemonSets", url: "https://kubernetes.io/docs/concepts/workloads/controllers/daemonset/" }
-        ]
-    },
-    {
-        day: 7,
-        title: "Observability & Probes",
-        domain: "Operations",
-        focus: "Monitoring health and debugging issues.",
-        concepts: [
-            "Liveness Probe: Restarts pod if app deadlocked.",
-            "Readiness Probe: Removes pod from Service if busy/starting.",
-            "Startup Probe: Delays other probes for slow starters.",
-            "Metrics Server: Aggregates resource usage.",
-            "Container Logs: Stdout/Stderr.",
-            "Events: Cluster-level occurrences.",
-            "Port Forwarding: Debugging locally.",
-            "Exec: Shell access.",
-            "Ephemeral Containers: Debugging distroless images."
-        ],
-        tasks: [
-            "Add a Liveness probe to a pod.",
-            "Simulate app failure (delete file checked by probe).",
-            "Watch K8s restart the pod.",
-            "Add a Readiness probe.",
-            "Simulate load; fail readiness.",
-            "Verify Service endpoints remove the pod IP.",
-            "Install Metrics Server (if needed).",
-            "Run `kubectl top nodes` and `top pods`.",
-            "View events for a namespace.",
-            "Debug a CrashLoopBackOff."
-        ],
-        lab: {
-            title: "The Broken Loop",
-            scenario: "An app starts but crashes immediately. Another runs but returns 500 errors.",
-            steps: "Debug a provided 'broken' manifest. Use `kubectl logs`, `kubectl describe`, and `kubectl get events` to find the root cause (e.g., missing secret, wrong command, failing probe) and fix it."
-        },
-        commands: [
-            { cmd: "kubectl top pods", desc: "Check CPU/RAM usage" },
-            { cmd: "kubectl logs <pod> -c <container> --previous", desc: "Logs of crashed instance" },
-            { cmd: "kubectl get events --sort-by=.metadata.creationTimestamp", desc: "Chronological events" },
-            { cmd: "kubectl describe pod <name>", desc: "Check probe failure events" }
-        ],
-        resources: [
-            { name: "Configure Liveness/Readiness", url: "https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/" },
-            { name: "Troubleshooting", url: "https://kubernetes.io/docs/tasks/debug/" }
-        ]
-    },
-    {
-        day: 8,
-        title: "Security & RBAC",
-        domain: "Security",
-        focus: "Controlling access to the cluster and resources.",
-        concepts: [
-            "RBAC: Role-Based Access Control.",
-            "Role: Permissions within a namespace.",
-            "ClusterRole: Permissions cluster-wide.",
-            "RoleBinding: Assigning Role to User/SA.",
-            "ClusterRoleBinding: Assigning ClusterRole.",
-            "ServiceAccount (SA): Identity for Pods.",
-            "SecurityContext: User IDs, Capabilities (Linux).",
-            "NetworkPolicies: Firewall for Pods.",
-            "Least Privilege: Security best practice."
-        ],
-        tasks: [
-            "Create a ServiceAccount.",
-            "Create a Role (can only `list` pods).",
-            "Bind Role to ServiceAccount.",
-            "Run a pod using that ServiceAccount.",
-            "Test access using `kubectl auth can-i`.",
-            "Create a NetworkPolicy (deny all traffic).",
-            "Allow traffic only from specific pod.",
-            "Run pod as non-root user (SecurityContext).",
-            "Mount API token into pod."
-        ],
-        lab: {
-            title: "The Bouncer",
-            scenario: "The `db` pod should only accept connections from `backend`, not `frontend` or `external`.",
-            steps: "Apply a 'Default Deny' NetworkPolicy. Try to ping DB from Backend (fails). Create an 'Allow' policy specifically selecting Backend's labels. Verify connectivity is restored only for Backend."
-        },
-        commands: [
-            { cmd: "kubectl create sa <name>", desc: "Create ServiceAccount" },
-            { cmd: "kubectl create role <name> --verb=get --resource=pods", desc: "Create Role" },
-            { cmd: "kubectl create rolebinding <name> --role=<role> --serviceaccount=<ns:sa>", desc: "Bind Role" },
-            { cmd: "kubectl auth can-i get pods --as=system:serviceaccount:<ns>:<name>", desc: "Test permissions" }
-        ],
-        resources: [
-            { name: "Using RBAC", url: "https://kubernetes.io/docs/reference/access-authn-authz/rbac/" },
-            { name: "Network Policies", url: "https://kubernetes.io/docs/concepts/services-networking/network-policies/" }
-        ]
-    },
-    {
-        day: 9,
-        title: "Helm & Package Management",
-        domain: "Automation",
-        focus: "Managing complex applications as packages.",
-        concepts: [
-            "Helm: The package manager for K8s.",
-            "Chart: A package (collection of YAMLs).",
-            "Release: An instance of a chart.",
-            "Repository: Where charts are stored.",
-            "Values.yaml: Custom configuration for charts.",
-            "Templates: Dynamic YAML generation (Go templates).",
-            "Helm Install/Upgrade/Rollback: Lifecycle management.",
-            "Chart.yaml: Metadata."
-        ],
-        tasks: [
-            "Install Helm CLI.",
-            "Add a Helm repo (e.g., Bitnami).",
-            "Search for a chart (e.g., Nginx, MySQL).",
-            "Install a chart with default values.",
-            "List releases.",
-            "Upgrade a release with new values (change replica count).",
-            "Rollback a release.",
-            "Create a starter chart (`helm create`).",
-            "Render templates locally (`helm template`).",
-            "Uninstall a release."
-        ],
-        lab: {
-            title: "The Storefront",
-            scenario: "You need to deploy Wordpress, but writing all the Deployment, Service, PVC, and Secret YAMLs manually is tedious.",
-            steps: "Use Helm to deploy Wordpress. Inspect the `values.yaml` to customize the blog title and admin password. Deploy it in one command. Upgrade the version without losing data."
-        },
-        commands: [
-            { cmd: "helm repo add <name> <url>", desc: "Add repository" },
-            { cmd: "helm install <release> <chart>", desc: "Install app" },
-            { cmd: "helm list", desc: "View installed apps" },
-            { cmd: "helm upgrade <release> <chart> -f values.yaml", desc: "Update config" },
-            { cmd: "helm uninstall <release>", desc: "Remove app" }
-        ],
-        resources: [
-            { name: "Helm Quickstart", url: "https://helm.sh/docs/intro/quickstart/" },
-            { name: "Artifact Hub", url: "https://artifacthub.io/" }
-        ]
-    },
-    {
-        day: 10,
-        title: "Ingress & Advanced Networking",
-        domain: "Networking",
-        focus: "Routing external traffic into the cluster.",
-        concepts: [
-            "Ingress: HTTP/HTTPS routing rules.",
-            "Ingress Controller: The implementation (Nginx, Traefik).",
-            "Path Based Routing: /api vs /web.",
-            "Host Based Routing: foo.com vs bar.com.",
-            "TLS/SSL: Configuring certs.",
-            "Annotations: Configuring controller specific behavior.",
-            "Default Backend: Where unknown traffic goes.",
-            "IngressClass: Selecting the controller."
-        ],
-        tasks: [
-            "Enable Ingress Controller (minikube addons enable ingress).",
-            "Create two deployments (Apple & Banana).",
-            "Expose them as Services.",
-            "Create an Ingress resource.",
-            "Configure `/apple` to route to Apple Service.",
-            "Configure `/banana` to route to Banana Service.",
-            "Edit `/etc/hosts` to map local domain.",
-            "Test access via browser/curl.",
-            "Inspect Ingress Controller logs."
-        ],
-        lab: {
-            title: "The Traffic Cop",
-            scenario: "You have one IP address but need to host two different websites.",
-            steps: "Deploy 'Blue Site' and 'Green Site'. Create an Ingress rule so `blue.local` goes to Blue and `green.local` goes to Green. Verify the routing works seamlessly through the single entry point."
-        },
-        commands: [
-            { cmd: "kubectl get ingress", desc: "List ingress rules" },
-            { cmd: "kubectl describe ingress <name>", desc: "Check routing config" },
-            { cmd: "kubectl logs -n ingress-nginx <controller-pod>", desc: "Debug controller" },
-            { cmd: "curl -H 'Host: example.com' <ip>", desc: "Test host routing" }
-        ],
-        resources: [
-            { name: "Ingress", url: "https://kubernetes.io/docs/concepts/services-networking/ingress/" },
-            { name: "Nginx Ingress Controller", url: "https://kubernetes.github.io/ingress-nginx/" }
-        ]
-    },
-    {
-        day: 11,
-        title: "Scheduling & Resource Management",
-        domain: "Optimization",
-        focus: "Controlling exactly where pods run and how much they consume.",
-        concepts: [
-            "Requests: Minimum resources guaranteed.",
-            "Limits: Maximum resources allowed (OOMKill).",
-            "NodeSelector: Simple node selection.",
-            "Node Affinity: Complex node selection logic.",
-            "Taints: Node repelling pods.",
-            "Tolerations: Pods ignoring taints.",
-            "Pod Affinity: Pods wanting to be near other pods.",
-            "QoS Classes: Guaranteed, Burstable, BestEffort.",
-            "LimitRange/ResourceQuota: Namespace limits."
-        ],
-        tasks: [
-            "Set CPU/Memory requests on a pod.",
-            "Set Limits (try to exceed them and watch OOMKill).",
-            "Label a node (e.g., `gpu=true`).",
-            "Use NodeSelector to schedule pod on labeled node.",
-            "Taint a node (e.g., `env=prod:NoSchedule`).",
-            "Try to schedule a standard pod (Pending state).",
-            "Add Toleration to pod to bypass taint.",
-            "Configure Namespace ResourceQuota.",
-            "Understand Pod priority."
-        ],
-        lab: {
-            title: "The VIP Lounge",
-            scenario: "You have a dedicated high-performance node. Only critical 'Gold' workloads should run there. No 'Silver' workloads allowed.",
-            steps: "Taint the high-perf node. Deploy a 'Silver' pod (it stays Pending or goes to other nodes). Deploy a 'Gold' pod with the correct toleration. Verify 'Gold' is the only one enjoying the high-performance node."
-        },
-        commands: [
-            { cmd: "kubectl taint nodes <node> key=value:NoSchedule", desc: "Add taint" },
-            { cmd: "kubectl label nodes <node> key=value", desc: "Add label" },
-            { cmd: "kubectl describe node <name>", desc: "Check usage/taints" },
-            { cmd: "kubectl get pods -o wide", desc: "See which node pods are on" }
-        ],
-        resources: [
-            { name: "Taints and Tolerations", url: "https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/" },
-            { name: "Resource Management", url: "https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/" }
-        ]
-    },
-    {
-        day: 12,
-        title: "Ecosystem & The Future",
-        domain: "Advanced",
-        focus: "Extending K8s and modern deployment practices.",
-        concepts: [
-            "CRD (Custom Resource Definition): Extending the API.",
-            "Operators: Automated software managers (Prometheus, Postgres).",
-            "GitOps: Infrastructure as Code (ArgoCD, Flux).",
-            "Service Mesh: Traffic management (Istio, Linkerd).",
-            "Cilium/eBPF: Advanced Networking.",
-            "Serverless K8s: Knative.",
-            "Managed K8s: EKS (AWS), GKE (Google), AKS (Azure).",
-            "CI/CD Integration: Jenkins/GitLab with K8s."
-        ],
-        tasks: [
-            "Explore existing CRDs (`kubectl get crd`).",
-            "Install a simple Operator (e.g., Prometheus Operator).",
-            "Create an instance of a Custom Resource.",
-            "Read about ArgoCD architecture.",
-            "Simulate GitOps (apply manifest from a Git URL).",
-            "Review the 12-Factor App methodology.",
-            "Explore the CNCF Landscape.",
-            "Plan a migration path for a legacy app."
-        ],
-        lab: {
-            title: "The Autopilot",
-            scenario: "You want a database, but managing backups, failover, and configuration is hard. You want a robot to do it.",
-            steps: "Install a Database Operator (like Postgres Operator). Create a simple YAML asking for a 'PostgresCluster'. Watch the Operator automatically spawn the Service, StatefulSet, Secrets, and Backup Jobs without you defining them manually."
-        },
-        commands: [
-            { cmd: "kubectl get crd", desc: "List Custom Definitions" },
-            { cmd: "kubectl get all -n <operator-ns>", desc: "See operator resources" },
-            { cmd: "kubectl api-resources", desc: "List all available APIs" }
-        ],
-        resources: [
-            { name: "CNCF Landscape", url: "https://landscape.cncf.io/" },
-            { name: "Operator Hub", url: "https://operatorhub.io/" },
-            { name: "ArgoCD", url: "https://argo-cd.readthedocs.io/en/stable/" }
-        ]
-    }
-];
+            {
+                day: 1,
+                title: "The Foundation - Architecture & Pods",
+                domain: "Core",
+                focus: "Understanding why K8s exists and the smallest unit of deployment.",
+                concepts: [
+                    {
+                        id: "pod-basics",
+                        title: "Pod: Smallest Deployable Unit",
+                        description: "A Pod is the smallest and simplest unit in the Kubernetes object model. It represents a single instance of a running process in your cluster and can contain one or more containers that share storage and network.",
+                        details: {
+                            whyImportant: "Pods encapsulate application containers, storage resources, unique network IP, and options that govern how the container(s) should run. Understanding Pods is fundamental because they're the atomic unit of scheduling.",
+                            realWorldAnalogy: "Think of a Pod as a shipping container for your application. Inside, you can have multiple boxes (containers) that work together to form a complete service.",
+                            commonMisconceptions: [
+                                "Pods are not persistent - they are ephemeral and can be destroyed/recreated",
+                                "Direct Pod deployment is rare - use Controllers instead",
+                                "Containers in same Pod share localhost network"
+                            ],
+                            openSourceProjects: [
+                                { name: "KubeVirt", url: "https://kubevirt.io", description: "Virtual Machine management on Kubernetes" },
+                                { name: "Podman", url: "https://podman.io", description: "Daemonless container engine that can run Pods" },
+                                { name: "Kata Containers", url: "https://katacontainers.io", description: "Secure container runtime with lightweight VMs" }
+                            ],
+                            troubleshooting: [
+                                "Pod stuck in Pending: Check resource limits, node selectors, taints",
+                                "CrashLoopBackOff: Check container logs, resource constraints",
+                                "ImagePullBackOff: Check image name, registry credentials"
+                            ]
+                        },
+                        tasks: [
+                            "Create multi-container Pod with sidecar pattern",
+                            "Debug Pod scheduling issues",
+                            "Configure resource limits for Pod"
+                        ]
+                    },
+                    {
+                        id: "k8s-architecture",
+                        title: "Kubernetes Architecture",
+                        description: "Kubernetes follows a client-server architecture with a control plane (master) and worker nodes. The control plane makes global decisions about the cluster and responds to cluster events.",
+                        details: {
+                            whyImportant: "Understanding the architecture helps in troubleshooting, scaling, and securing your cluster. Each component has specific responsibilities.",
+                            realWorldAnalogy: "The control plane is like an airport control tower managing all flights (pods), while worker nodes are runways where planes actually land and take off.",
+                            components: {
+                                "Control Plane": ["API Server", "etcd", "Scheduler", "Controller Manager", "Cloud Controller Manager"],
+                                "Worker Nodes": ["Kubelet", "Kube Proxy", "Container Runtime"],
+                                "Add-ons": ["DNS", "Dashboard", "Ingress Controller"]
+                            },
+                            openSourceProjects: [
+                                { name: "K3s", url: "https://k3s.io", description: "Lightweight Kubernetes distribution" },
+                                { name: "MicroK8s", url: "https://microk8s.io", description: "Small, fast Kubernetes for developers" },
+                                { name: "k0s", url: "https://k0sproject.io", description: "Zero-friction Kubernetes distribution" }
+                            ],
+                            productionConsiderations: [
+                                "HA control plane with multiple master nodes",
+                                "Separate etcd cluster for large deployments",
+                                "Node pool strategy for different workloads"
+                            ]
+                        }
+                    },
+                    {
+                        id: "yaml-declarative",
+                        title: "YAML & Declarative Configuration",
+                        description: "Kubernetes uses YAML files to declare the desired state of resources. The declarative approach specifies WHAT you want, not HOW to achieve it.",
+                        details: {
+                            whyImportant: "Declarative configuration enables GitOps, version control, and reproducible deployments. It's the foundation of Infrastructure as Code (IaC).",
+                            bestPractices: [
+                                "Use kustomize or helm for managing multiple environments",
+                                "Validate YAML with kubeval or kubectl --dry-run",
+                                "Template repetitive configurations"
+                            ],
+                            tools: [
+                                { name: "Kustomize", purpose: "Native Kubernetes configuration customization" },
+                                { name: "Helm", purpose: "Package manager with templating" },
+                                { name: "Jsonnet", purpose: "Data templating language for app config" }
+                            ],
+                            antiPatterns: [
+                                "Hardcoding values in YAML",
+                                "Mixing environment-specific config",
+                                "Not using linters or validators"
+                            ]
+                        }
+                    }
+                ],
+                tasks: [
+                    "Install kind/minikube and Kubectl",
+                    "Start a cluster",
+                    "Check cluster status `kubectl cluster-info`",
+                    "Create namespace `dev-team`",
+                    "List all namespaces",
+                    "Run Nginx pod imperatively",
+                    "Create Nginx pod via YAML",
+                    "List pods in default namespace",
+                    "List pods in `dev-team`",
+                    "Describe pod lifecycle events",
+                    "View running pod logs",
+                    "Execute `ls` inside a pod",
+                    "Delete a pod manually",
+                    "Create multi-container pod (App+Logger)",
+                    "Check specific container logs",
+                    "Get pod details in JSON",
+                    "Use `watch` to monitor status",
+                    "Delete all pods in namespace",
+                    "Set default namespace context"
+                ],
+                lab: {
+                    title: "The 'Ghost' Pod",
+                    scenario: "A developer created a pod manually, but it keeps disappearing after they delete it (or so they think). You need to prove that pods are ephemeral.",
+                    steps: "Create a pod, write a temporary file to `/tmp`, delete the pod, and recreate it. Verify the file is gone. This reinforces that Pods are not persistent."
+                },
+                commands: [
+                    { cmd: "kubectl run <name> --image=<image>", desc: "Create a pod" },
+                    { cmd: "kubectl get pods", desc: "List pods" },
+                    { cmd: "kubectl describe pod <name>", desc: "Deep dive into status" },
+                    { cmd: "kubectl logs <name>", desc: "Fetch logs" },
+                    { cmd: "kubectl delete pod <name>", desc: "Terminate pod" }
+                ],
+                resources: [
+                    { name: "Kubernetes Basics", url: "https://kubernetes.io/docs/tutorials/kubernetes-basics/" },
+                    { name: "K8s Architecture", url: "https://kubernetes.io/docs/concepts/overview/components/" }
+                ]
+            }
+            // ... (other days would follow the same enhanced structure)
+        ];
+
+        // AI Knowledge Base for Concepts
+        const aiKnowledgeBase = {
+            "pod-basics": {
+                explanations: [
+                    {
+                        level: "beginner",
+                        content: "A Pod is like a bubble wrap package for your containers. Inside this bubble, containers can talk to each other easily (they're on localhost) and share storage. But be careful - if the bubble pops (Pod crashes), everything inside is gone!"
+                    },
+                    {
+                        level: "intermediate",
+                        content: "Pods provide shared namespaces: network (same IP), IPC (inter-process communication), and optionally volume storage. This is why sidecar patterns work well - a logging container can access the same volumes as the main app container."
+                    },
+                    {
+                        level: "advanced",
+                        content: "Pods have a PodSpec that defines containers, volumes, securityContext, and lifecycle hooks. The kubelet on each node monitors Pods via the PodSpec from the API server and ensures the actual state matches desired state."
+                    }
+                ],
+                realWorldScenarios: [
+                    {
+                        title: "E-commerce App Deployment",
+                        problem: "Your e-commerce app needs a main application container and a file upload processor that shares the uploads directory.",
+                        solution: "Create a Pod with two containers: main-app and upload-processor. Mount a shared emptyDir volume at /uploads. The main-app writes uploads, upload-processor processes them.",
+                        yamlExample: `
+apiVersion: v1
+kind: Pod
+metadata:
+  name: ecommerce-app
+spec:
+  containers:
+  - name: main-app
+    image: nginx:latest
+    volumeMounts:
+    - name: upload-storage
+      mountPath: /uploads
+  - name: upload-processor
+    image: python:3.9
+    command: ["python", "/app/processor.py"]
+    volumeMounts:
+    - name: upload-storage
+      mountPath: /data/uploads
+  volumes:
+  - name: upload-storage
+    emptyDir: {}`
+                    },
+                    {
+                        title: "Debugging Tool Sidecar",
+                        problem: "You need to debug a production Pod without affecting the main application.",
+                        solution: "Add an ephemeral debug container using 'kubectl debug'. This creates a temporary container in the Pod with debugging tools.",
+                        command: "kubectl debug pod/myapp -it --image=busybox --target=myapp"
+                    }
+                ],
+                commonQuestions: [
+                    {
+                        q: "Why can't I just run containers directly?",
+                        a: "Pods provide the necessary abstractions for Kubernetes to manage containers as a unit - scheduling, scaling, networking, and storage are all coordinated at the Pod level."
+                    },
+                    {
+                        q: "How many containers should I put in a Pod?",
+                        a: "Generally, one main container plus helper/sidecar containers that need tight coupling. If containers can be scaled independently, use separate Pods."
+                    }
+                ]
+            },
+            "k8s-architecture": {
+                explanations: [
+                    {
+                        level: "beginner",
+                        content: "Think of Kubernetes as a smart warehouse manager. The control plane (managers) decides where to put packages (pods), while the workers (forklifts) actually move and run them."
+                    },
+                    {
+                        level: "intermediate",
+                        content: "The API Server is the front door - everything goes through it. etcd is the brain's memory storing all cluster data. Scheduler is the planner assigning work. Controllers are the workers making sure reality matches plans."
+                    },
+                    {
+                        level: "advanced",
+                        content: "Kubernetes uses a watch-based architecture. Components watch for changes via the API Server and react. This event-driven model allows for the declarative nature - you specify desired state, controllers converge current state to match."
+                    }
+                ],
+                realWorldScenarios: [
+                    {
+                        title: "High Traffic E-commerce Black Friday",
+                        problem: "Your e-commerce site needs to handle 10x traffic during Black Friday sales.",
+                        solution: "Scale worker nodes horizontally using cluster autoscaler. Use pod anti-affinity to spread critical pods across nodes. Implement HPA (Horizontal Pod Autoscaler) for automatic scaling.",
+                        architecture: "Multi-AZ deployment with 3 master nodes (across zones), auto-scaling node groups, and etcd running on dedicated instances with SSD storage."
+                    },
+                    {
+                        title: "Disaster Recovery Setup",
+                        problem: "Need to survive an entire AZ failure.",
+                        solution: "Multi-cluster federation with Cluster API. Use Velero for cross-cluster backup/restore. Implement service mesh (Istio) for traffic failover between clusters.",
+                        tools: ["Cluster API", "Velero", "Istio", "ExternalDNS"]
+                    }
+                ]
+            }
+        };
 
         // State Management
         let currentState = {
             activeDay: null,
+            activeConcept: null,
             completedDays: new Set(),
-            theme: 'light'
+            completedConcepts: new Set(),
+            theme: 'light',
+            aiConversations: {},
+            userProfile: {
+                level: "beginner",
+                learningStyle: "hands-on"
+            }
         };
 
         // --- Core Logic ---
@@ -684,6 +417,7 @@
         function init() {
             initTheme();
             renderDashboard();
+            initAI();
         }
 
         function initTheme() {
@@ -709,25 +443,48 @@
                     icon.textContent = '☀️';
                     currentState.theme = 'dark';
                 }
-                // Refresh charts on theme change for color consistency
-                if (currentState.activeDay === null) renderDashboard();
+                if (currentState.activeDay === null && currentState.activeConcept === null) renderDashboard();
+            });
+        }
+
+        function initAI() {
+            // Initialize AI conversations storage
+            k8sData.forEach(day => {
+                day.concepts.forEach(concept => {
+                    if (!currentState.aiConversations[concept.id]) {
+                        currentState.aiConversations[concept.id] = [];
+                    }
+                });
             });
         }
 
         // Dashboard Renderer
         function renderDashboard() {
             currentState.activeDay = null;
+            currentState.activeConcept = null;
             const app = document.getElementById('app-view');
             const totalConcepts = k8sData.reduce((acc, day) => acc + day.concepts.length, 0);
             const totalTasks = k8sData.reduce((acc, day) => acc + (day.tasks ? day.tasks.length : 0), 0);
+            const completedConcepts = currentState.completedConcepts.size;
             
             app.innerHTML = `
                 <div class="mb-8 text-center animate-fade-in">
-                    <h1 class="text-3xl sm:text-4xl font-bold text-stone-800 dark:text-stone-100 mb-2">Kubernetes 12-Day Journey</h1>
-                    <p class="text-stone-600 dark:text-stone-400 max-w-2xl mx-auto px-4">Master architecture, networking, and operations through structured daily practice.</p>
+                    <div class="relative inline-block mb-4">
+                        <div class="absolute -inset-1 bg-gradient-to-r from-sky-500 to-indigo-500 rounded-full blur opacity-30 animate-pulse-slow"></div>
+                        <h1 class="text-3xl sm:text-4xl font-bold text-stone-800 dark:text-stone-100 relative px-6 py-3">Kubernetes Mastery Journey</h1>
+                    </div>
+                    <p class="text-stone-600 dark:text-stone-400 max-w-2xl mx-auto px-4">Master architecture, networking, and operations through AI-powered structured learning.</p>
+                    <div class="mt-6 flex flex-wrap justify-center gap-4">
+                        <button onclick="renderAIAssistant()" class="px-4 py-2 bg-gradient-to-r from-sky-500 to-indigo-500 text-white rounded-lg font-medium hover:opacity-90 transition-opacity flex items-center gap-2">
+                            <i class="fas fa-robot"></i> AI Assistant
+                        </button>
+                        <button onclick="renderPracticeProblems()" class="px-4 py-2 bg-gradient-to-r from-emerald-500 to-green-500 text-white rounded-lg font-medium hover:opacity-90 transition-opacity flex items-center gap-2">
+                            <i class="fas fa-code"></i> Practice Problems
+                        </button>
+                    </div>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-8">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">
                     <div class="bg-white dark:bg-stone-900 p-6 rounded-xl shadow-sm border border-stone-200 dark:border-stone-800">
                         <div class="text-sm text-stone-500 dark:text-stone-400 font-medium">Total Days</div>
                         <div class="text-3xl font-bold text-stone-800 dark:text-stone-100">12</div>
@@ -739,12 +496,20 @@
                     <div class="bg-white dark:bg-stone-900 p-6 rounded-xl shadow-sm border border-stone-200 dark:border-stone-800">
                         <div class="text-sm text-stone-500 dark:text-stone-400 font-medium">Core Concepts</div>
                         <div class="text-3xl font-bold text-stone-800 dark:text-stone-100">${totalConcepts}</div>
-                        <div class="text-xs text-stone-400 mt-1">Foundational knowledge</div>
+                        <div class="mt-2 h-2 bg-stone-100 dark:bg-stone-800 rounded-full overflow-hidden">
+                            <div class="h-full bg-emerald-500" style="width: ${Math.round((completedConcepts / totalConcepts) * 100)}%"></div>
+                        </div>
+                        <div class="text-xs text-stone-400 mt-1">${completedConcepts} mastered</div>
                     </div>
-                    <div class="hidden sm:block bg-white dark:bg-stone-900 p-6 rounded-xl shadow-sm border border-stone-200 dark:border-stone-800">
+                    <div class="bg-white dark:bg-stone-900 p-6 rounded-xl shadow-sm border border-stone-200 dark:border-stone-800">
                         <div class="text-sm text-stone-500 dark:text-stone-400 font-medium">Hands-on Tasks</div>
                         <div class="text-3xl font-bold text-stone-800 dark:text-stone-100">${totalTasks}</div>
                         <div class="text-xs text-stone-400 mt-1">Practical exercises</div>
+                    </div>
+                    <div class="bg-white dark:bg-stone-900 p-6 rounded-xl shadow-sm border border-stone-200 dark:border-stone-800">
+                        <div class="text-sm text-stone-500 dark:text-stone-400 font-medium">Learning Level</div>
+                        <div class="text-3xl font-bold text-stone-800 dark:text-stone-100 capitalize">${currentState.userProfile.level}</div>
+                        <button onclick="changeLearningLevel()" class="text-xs text-sky-600 hover:text-sky-700 mt-2">Change level</button>
                     </div>
                 </div>
 
@@ -771,6 +536,7 @@
                             <h4 class="font-bold text-stone-800 dark:text-stone-100 mb-2 leading-tight">${day.title}</h4>
                             <div class="mt-4 flex items-center gap-2">
                                 <span class="px-2 py-1 bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 text-xs rounded font-medium">${day.domain}</span>
+                                <span class="text-xs text-stone-400">${day.concepts.length} concepts</span>
                             </div>
                         </div>
                     `).join('')}
@@ -823,13 +589,17 @@
                     responsive: true,
                     maintainAspectRatio: false,
                     cutout: '65%',
-                    plugins: { legend: { position: 'right', labels: { color: textColor, padding: 20 } } }
+                    plugins: { 
+                        legend: { position: 'right', labels: { color: textColor, padding: 20 } },
+                        tooltip: { callbacks: { label: function(context) { return `${context.label}: ${context.raw} days`; } } }
+                    }
                 }
             });
         }
 
         function renderDay(dayId) {
             currentState.activeDay = dayId;
+            currentState.activeConcept = null;
             const dayData = k8sData.find(d => d.day === dayId);
             const app = document.getElementById('app-view');
             const isCompleted = currentState.completedDays.has(dayId);
@@ -837,125 +607,941 @@
             app.innerHTML = `
                 <div class="mb-6 flex flex-col md:flex-row justify-between md:items-center gap-4 animate-fade-in">
                     <div>
-                        <button onclick="renderDashboard()" class="text-sm text-stone-500 dark:text-stone-400 hover:text-stone-800 dark:hover:text-stone-200 mb-2 flex items-center gap-1">← Back</button>
+                        <button onclick="renderDashboard()" class="text-sm text-stone-500 dark:text-stone-400 hover:text-stone-800 dark:hover:text-stone-200 mb-2 flex items-center gap-1"><i class="fas fa-arrow-left"></i> Back to Dashboard</button>
                         <h2 class="text-2xl sm:text-3xl font-bold text-stone-900 dark:text-stone-100">Day ${dayData.day}: ${dayData.title}</h2>
+                        <p class="text-stone-600 dark:text-stone-400 mt-2">${dayData.focus}</p>
                     </div>
                     <div class="flex items-center gap-3">
                         <button onclick="toggleComplete(${dayId})" 
                             class="w-full md:w-auto px-4 py-2 rounded-lg font-medium transition-colors ${isCompleted ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400 border border-green-200 dark:border-green-800' : 'bg-stone-800 text-white dark:bg-stone-100 dark:text-stone-900 hover:bg-stone-700 dark:hover:bg-stone-200'}">
-                            ${isCompleted ? 'Completed ✓' : 'Mark as Complete'}
+                            ${isCompleted ? '<i class="fas fa-check mr-2"></i>Completed' : '<i class="fas fa-flag mr-2"></i>Mark as Complete'}
                         </button>
                     </div>
                 </div>
 
-                <div class="flex border-b border-stone-200 dark:border-stone-800 mb-8 overflow-x-auto no-scrollbar">
-                    ${['Concepts', 'Tasks', 'Lab Scenario', 'Commands'].map(tab => `
-                        <button onclick="switchTab('${tab}')" 
-                            id="tab-${tab.replace(' ', '')}"
-                            class="px-4 sm:px-6 py-3 text-sm font-medium text-stone-500 dark:text-stone-400 hover:text-stone-800 dark:hover:text-stone-200 transition-colors whitespace-nowrap ${tab === 'Concepts' ? 'tab-active' : ''}">
-                            ${tab}
-                        </button>
-                    `).join('')}
-                </div>
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                    <div class="lg:col-span-2">
+                        <div class="bg-gradient-to-r from-sky-50 to-indigo-50 dark:from-sky-950/20 dark:to-indigo-950/20 p-6 rounded-xl mb-6">
+                            <h3 class="text-lg font-bold text-stone-800 dark:text-stone-100 mb-3"><i class="fas fa-bullseye mr-2"></i>Today's Focus</h3>
+                            <p class="text-stone-700 dark:text-stone-300">${dayData.focus}</p>
+                        </div>
 
-                <div id="tab-content" class="min-h-[300px] animate-fade-in">
-                    ${getConceptsHTML(dayData)}
+                        <h3 class="text-xl font-bold text-stone-800 dark:text-stone-100 mb-4">Core Concepts</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                            ${dayData.concepts.map((concept, index) => `
+                                <div onclick="renderConceptDetail('${concept.id}')" 
+                                     class="concept-card p-5 rounded-lg border ${currentState.completedConcepts.has(concept.id) ? 'border-emerald-500' : 'border-stone-200 dark:border-stone-800'} shadow-sm card-hover cursor-pointer transition-all">
+                                    <div class="flex justify-between items-start mb-3">
+                                        <span class="text-xs font-bold uppercase tracking-wider text-sky-600">Concept ${index + 1}</span>
+                                        ${currentState.completedConcepts.has(concept.id) ? '<span class="text-xs text-emerald-600"><i class="fas fa-check-circle"></i> Mastered</span>' : ''}
+                                    </div>
+                                    <h4 class="font-bold text-stone-800 dark:text-stone-100 mb-2">${concept.title}</h4>
+                                    <p class="text-sm text-stone-600 dark:text-stone-400 mb-3">${concept.description}</p>
+                                    <div class="flex items-center justify-between mt-4">
+                                        <span class="text-xs text-stone-400">Click to explore</span>
+                                        <button onclick="event.stopPropagation(); askAIAboutConcept('${concept.id}')" class="text-xs text-sky-600 hover:text-sky-700 flex items-center gap-1">
+                                            <i class="fas fa-robot"></i> Ask AI
+                                        </button>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+
+                    <div class="space-y-6">
+                        <div class="bg-white dark:bg-stone-900 p-5 rounded-xl border border-stone-200 dark:border-stone-800">
+                            <h3 class="text-lg font-bold text-stone-800 dark:text-stone-100 mb-4"><i class="fas fa-tasks mr-2"></i>Quick Actions</h3>
+                            <div class="space-y-3">
+                                <button onclick="renderPracticeProblems(${dayId})" class="w-full text-left p-3 rounded-lg bg-stone-50 dark:bg-stone-800 hover:bg-stone-100 dark:hover:bg-stone-700 transition-colors flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-full bg-emerald-100 dark:bg-emerald-900 flex items-center justify-center">
+                                        <i class="fas fa-code text-emerald-600"></i>
+                                    </div>
+                                    <div>
+                                        <div class="font-medium text-stone-800 dark:text-stone-100">Practice Problems</div>
+                                        <div class="text-xs text-stone-400">Test your knowledge</div>
+                                    </div>
+                                </button>
+                                <button onclick="renderRealWorldScenarios(${dayId})" class="w-full text-left p-3 rounded-lg bg-stone-50 dark:bg-stone-800 hover:bg-stone-100 dark:hover:bg-stone-700 transition-colors flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-full bg-amber-100 dark:bg-amber-900 flex items-center justify-center">
+                                        <i class="fas fa-globe text-amber-600"></i>
+                                    </div>
+                                    <div>
+                                        <div class="font-medium text-stone-800 dark:text-stone-100">Real World Scenarios</div>
+                                        <div class="text-xs text-stone-400">Industry use cases</div>
+                                    </div>
+                                </button>
+                                <button onclick="renderOpenSourceProjects(${dayId})" class="w-full text-left p-3 rounded-lg bg-stone-50 dark:bg-stone-800 hover:bg-stone-100 dark:hover:bg-stone-700 transition-colors flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-full bg-violet-100 dark:bg-violet-900 flex items-center justify-center">
+                                        <i class="fab fa-github text-violet-600"></i>
+                                    </div>
+                                    <div>
+                                        <div class="font-medium text-stone-800 dark:text-stone-100">Open Source Projects</div>
+                                        <div class="text-xs text-stone-400">Contribute & learn</div>
+                                    </div>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="bg-white dark:bg-stone-900 p-5 rounded-xl border border-stone-200 dark:border-stone-800">
+                            <h3 class="text-lg font-bold text-stone-800 dark:text-stone-100 mb-4"><i class="fas fa-terminal mr-2"></i>Key Commands</h3>
+                            <div class="space-y-2">
+                                ${dayData.commands.slice(0, 3).map(cmd => `
+                                    <div class="font-mono text-sm bg-stone-800 text-stone-100 dark:bg-stone-800 dark:text-stone-300 p-2 rounded">
+                                        <span class="text-green-400">$</span> ${cmd.cmd}
+                                        <div class="text-xs text-stone-400 mt-1">${cmd.desc}</div>
+                                    </div>
+                                `).join('')}
+                                <button onclick="showAllCommands(${dayId})" class="text-sm text-sky-600 hover:text-sky-700 w-full text-center mt-2">Show all commands</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             `;
             updateNavProgress();
         }
 
-        function getConceptsHTML(data) {
-            return `
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    ${data.concepts.map((concept, index) => {
-                        const parts = concept.split(':');
-                        return `
-                        <div class="bg-white dark:bg-stone-900 p-4 rounded-lg border border-stone-200 dark:border-stone-800 shadow-sm transition-colors">
-                            <span class="text-xs font-mono text-stone-400 dark:text-stone-500 block mb-1">#${index + 1}</span>
-                            <h4 class="font-bold text-stone-800 dark:text-stone-100 mb-1">${parts[0]}</h4>
-                            <p class="text-sm text-stone-600 dark:text-stone-400">${parts[1] || ''}</p>
-                        </div>`;
-                    }).join('')}
-                </div>`;
-        }
+        function renderConceptDetail(conceptId) {
+            // Find concept across all days
+            let conceptData = null;
+            let dayData = null;
+            
+            for (const day of k8sData) {
+                const concept = day.concepts.find(c => c.id === conceptId);
+                if (concept) {
+                    conceptData = concept;
+                    dayData = day;
+                    break;
+                }
+            }
 
-        function getTasksHTML(data) {
-            if (!data.tasks) return `<p class="text-stone-500">No tasks listed for this day.</p>`;
-            return `
-                 <div class="bg-white dark:bg-stone-900 rounded-xl shadow-sm border border-stone-200 dark:border-stone-800 overflow-hidden">
-                    <div class="p-4 sm:p-6 bg-stone-50 dark:bg-stone-850 border-b border-stone-200 dark:border-stone-800">
-                        <h3 class="font-bold text-stone-800 dark:text-stone-100">Hands-on Checklist</h3>
-                    </div>
-                    <div class="divide-y divide-stone-100 dark:divide-stone-800">
-                        ${data.tasks.map((task, index) => `
-                            <label class="flex items-start gap-4 p-4 hover:bg-stone-50 dark:hover:bg-stone-800/50 cursor-pointer transition-colors">
-                                <input type="checkbox" class="mt-1 w-4 h-4 text-sky-600 rounded border-stone-300 dark:border-stone-700 bg-transparent focus:ring-sky-500">
-                                <div class="text-sm sm:text-base text-stone-600 dark:text-stone-300">${task}</div>
-                            </label>`).join('')}
-                    </div>
-                </div>`;
-        }
+            if (!conceptData) return renderDashboard();
 
-        function getLabHTML(data) {
-            return `
-                <div class="max-w-4xl mx-auto">
-                    <div class="bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-900/30 rounded-xl p-6">
-                        <div class="flex items-center gap-2 mb-4">
-                            <span class="text-2xl">⚡</span>
-                            <h3 class="text-xl font-bold text-amber-900 dark:text-amber-400">${data.lab.title}</h3>
+            currentState.activeConcept = conceptId;
+            const aiData = aiKnowledgeBase[conceptId] || {};
+            const isCompleted = currentState.completedConcepts.has(conceptId);
+
+            const app = document.getElementById('app-view');
+            app.innerHTML = `
+                <div class="mb-6 animate-fade-in">
+                    <button onclick="renderDay(${dayData.day})" class="text-sm text-stone-500 dark:text-stone-400 hover:text-stone-800 dark:hover:text-stone-200 mb-4 flex items-center gap-1">
+                        <i class="fas fa-arrow-left"></i> Back to Day ${dayData.day}
+                    </button>
+                    
+                    <div class="flex flex-col md:flex-row justify-between md:items-start gap-4 mb-8">
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="px-3 py-1 bg-sky-100 dark:bg-sky-900 text-sky-800 dark:text-sky-200 text-xs rounded-full font-medium">Core Concept</span>
+                                ${isCompleted ? '<span class="px-3 py-1 bg-emerald-100 dark:bg-emerald-900 text-emerald-800 dark:text-emerald-200 text-xs rounded-full font-medium"><i class="fas fa-check mr-1"></i>Mastered</span>' : ''}
+                            </div>
+                            <h2 class="text-2xl sm:text-3xl font-bold text-stone-900 dark:text-stone-100 mb-3">${conceptData.title}</h2>
+                            <p class="text-lg text-stone-700 dark:text-stone-300 mb-6">${conceptData.description}</p>
                         </div>
-                        <p class="text-amber-900 dark:text-amber-300/80 mb-6 leading-relaxed">${data.lab.scenario}</p>
-                        <div class="bg-white dark:bg-stone-900/50 p-4 rounded-lg border border-amber-100 dark:border-amber-900/20 text-amber-900 dark:text-amber-300">
-                            <strong>Steps:</strong> ${data.lab.steps}
+                        <div class="flex flex-col gap-2">
+                            <button onclick="toggleConceptComplete('${conceptId}')" 
+                                class="px-4 py-2 rounded-lg font-medium transition-colors ${isCompleted ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-sky-600 text-white hover:bg-sky-700'}">
+                                ${isCompleted ? '<i class="fas fa-check-circle mr-2"></i>Mastered' : '<i class="fas fa-graduation-cap mr-2"></i>Mark as Mastered'}
+                            </button>
+                            <button onclick="askAIAboutConcept('${conceptId}')" class="px-4 py-2 rounded-lg font-medium bg-gradient-to-r from-sky-500 to-indigo-500 text-white hover:opacity-90 transition-opacity">
+                                <i class="fas fa-robot mr-2"></i>Ask AI Assistant
+                            </button>
                         </div>
                     </div>
-                </div>`;
+
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        <!-- Left Column: Detailed Information -->
+                        <div class="lg:col-span-2 space-y-8">
+                            <!-- Why It's Important -->
+                            <div class="bg-white dark:bg-stone-900 p-6 rounded-xl border border-stone-200 dark:border-stone-800">
+                                <h3 class="text-xl font-bold text-stone-800 dark:text-stone-100 mb-4 flex items-center gap-2">
+                                    <i class="fas fa-star text-amber-500"></i> Why This Matters
+                                </h3>
+                                <p class="text-stone-700 dark:text-stone-300 mb-4">${conceptData.details?.whyImportant || 'This concept is fundamental to understanding Kubernetes architecture and operations.'}</p>
+                                
+                                ${conceptData.details?.realWorldAnalogy ? `
+                                <div class="bg-amber-50 dark:bg-amber-900/20 p-4 rounded-lg mt-4">
+                                    <h4 class="font-bold text-amber-800 dark:text-amber-300 mb-2"><i class="fas fa-lightbulb mr-2"></i>Real World Analogy</h4>
+                                    <p class="text-amber-700 dark:text-amber-400">${conceptData.details.realWorldAnalogy}</p>
+                                </div>
+                                ` : ''}
+                            </div>
+
+                            <!-- Real World Scenarios -->
+                            ${aiData.realWorldScenarios ? `
+                            <div class="bg-white dark:bg-stone-900 p-6 rounded-xl border border-stone-200 dark:border-stone-800">
+                                <h3 class="text-xl font-bold text-stone-800 dark:text-stone-100 mb-4 flex items-center gap-2">
+                                    <i class="fas fa-briefcase text-emerald-500"></i> Real World Scenarios
+                                </h3>
+                                <div class="space-y-6">
+                                    ${aiData.realWorldScenarios.map((scenario, idx) => `
+                                        <div class="border-l-4 border-emerald-500 pl-4 py-2">
+                                            <h4 class="font-bold text-stone-800 dark:text-stone-100 mb-2">${scenario.title}</h4>
+                                            <p class="text-stone-600 dark:text-stone-400 mb-3"><strong>Problem:</strong> ${scenario.problem}</p>
+                                            <p class="text-stone-700 dark:text-stone-300 mb-3"><strong>Solution:</strong> ${scenario.solution}</p>
+                                            ${scenario.yamlExample ? `
+                                            <details class="mt-3">
+                                                <summary class="cursor-pointer text-sm text-sky-600 hover:text-sky-700">View YAML Example</summary>
+                                                <pre class="mt-2 font-mono text-xs bg-stone-800 text-stone-100 dark:bg-stone-900 dark:text-stone-300 p-4 rounded overflow-x-auto">${scenario.yamlExample}</pre>
+                                            </details>
+                                            ` : ''}
+                                            ${scenario.command ? `
+                                            <div class="mt-3 font-mono text-sm bg-stone-800 text-stone-100 dark:bg-stone-900 dark:text-stone-300 p-3 rounded">
+                                                <span class="text-green-400">$</span> ${scenario.command}
+                                            </div>
+                                            ` : ''}
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                            ` : ''}
+
+                            <!-- Open Source Projects -->
+                            ${conceptData.details?.openSourceProjects ? `
+                            <div class="bg-white dark:bg-stone-900 p-6 rounded-xl border border-stone-200 dark:border-stone-800">
+                                <h3 class="text-xl font-bold text-stone-800 dark:text-stone-100 mb-4 flex items-center gap-2">
+                                    <i class="fab fa-github text-violet-500"></i> Open Source Projects
+                                </h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    ${conceptData.details.openSourceProjects.map(project => `
+                                        <a href="${project.url}" target="_blank" 
+                                           class="block p-4 rounded-lg border border-stone-200 dark:border-stone-800 hover:border-violet-500 dark:hover:border-violet-500 transition-colors group">
+                                            <div class="flex items-start gap-3">
+                                                <div class="w-10 h-10 rounded-lg bg-violet-100 dark:bg-violet-900 flex items-center justify-center group-hover:bg-violet-200 dark:group-hover:bg-violet-800 transition-colors">
+                                                    <i class="fab fa-github text-violet-600 dark:text-violet-400"></i>
+                                                </div>
+                                                <div>
+                                                    <h4 class="font-bold text-stone-800 dark:text-stone-100 group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors">${project.name}</h4>
+                                                    <p class="text-sm text-stone-600 dark:text-stone-400 mt-1">${project.description}</p>
+                                                    <div class="text-xs text-stone-400 mt-2 flex items-center gap-1">
+                                                        <i class="fas fa-external-link-alt"></i> Explore project
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    `).join('')}
+                                </div>
+                            </div>
+                            ` : ''}
+                        </div>
+
+                        <!-- Right Column: AI Assistant & Quick Info -->
+                        <div class="space-y-8">
+                            <!-- AI Assistant Chat -->
+                            <div class="bg-gradient-to-b from-sky-50 to-white dark:from-sky-950/20 dark:to-stone-900 p-6 rounded-xl border border-sky-200 dark:border-sky-800">
+                                <div class="flex items-center gap-3 mb-6">
+                                    <div class="relative">
+                                        <div class="w-12 h-12 rounded-full bg-gradient-to-r from-sky-500 to-indigo-500 flex items-center justify-center">
+                                            <i class="fas fa-robot text-white text-xl"></i>
+                                        </div>
+                                        <div class="absolute -top-1 -right-1 w-5 h-5 bg-emerald-500 rounded-full flex items-center justify-center">
+                                            <i class="fas fa-bolt text-white text-xs"></i>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <h3 class="font-bold text-stone-800 dark:text-stone-100">AI Assistant</h3>
+                                        <p class="text-sm text-stone-600 dark:text-stone-400">Ask me anything about ${conceptData.title}</p>
+                                    </div>
+                                </div>
+                                
+                                <div id="ai-chat-container" class="space-y-4 max-h-96 overflow-y-auto mb-4">
+                                    ${renderAIChat(conceptId)}
+                                </div>
+                                
+                                <div class="flex gap-2">
+                                    <input type="text" id="ai-question-input" 
+                                           placeholder="Ask about ${conceptData.title}..."
+                                           class="flex-1 px-4 py-2 rounded-lg border border-stone-300 dark:border-stone-700 bg-white dark:bg-stone-900 focus:outline-none focus:ring-2 focus:ring-sky-500">
+                                    <button onclick="sendAIQuestion('${conceptId}')" class="px-4 py-2 bg-sky-600 text-white rounded-lg hover:bg-sky-700 transition-colors">
+                                        <i class="fas fa-paper-plane"></i>
+                                    </button>
+                                </div>
+                                <div class="mt-3 grid grid-cols-2 gap-2">
+                                    <button onclick="askAIQuestion('${conceptId}', 'Give me a beginner example')" class="text-xs px-3 py-1 bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 rounded hover:bg-stone-200 dark:hover:bg-stone-700 transition-colors">
+                                        Beginner Example
+                                    </button>
+                                    <button onclick="askAIQuestion('${conceptId}', 'Common pitfalls to avoid')" class="text-xs px-3 py-1 bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 rounded hover:bg-stone-200 dark:hover:bg-stone-700 transition-colors">
+                                        Common Pitfalls
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Quick Reference -->
+                            <div class="bg-white dark:bg-stone-900 p-6 rounded-xl border border-stone-200 dark:border-stone-800">
+                                <h3 class="text-lg font-bold text-stone-800 dark:text-stone-100 mb-4">Quick Reference</h3>
+                                
+                                ${conceptData.details?.commonMisconceptions ? `
+                                <div class="mb-6">
+                                    <h4 class="font-medium text-stone-700 dark:text-stone-300 mb-2 flex items-center gap-2">
+                                        <i class="fas fa-exclamation-triangle text-amber-500"></i> Common Misconceptions
+                                    </h4>
+                                    <ul class="space-y-2">
+                                        ${conceptData.details.commonMisconceptions.map(misconception => `
+                                            <li class="text-sm text-stone-600 dark:text-stone-400 flex items-start gap-2">
+                                                <i class="fas fa-times text-red-500 mt-1"></i>
+                                                <span>${misconception}</span>
+                                            </li>
+                                        `).join('')}
+                                    </ul>
+                                </div>
+                                ` : ''}
+
+                                ${conceptData.tasks ? `
+                                <div>
+                                    <h4 class="font-medium text-stone-700 dark:text-stone-300 mb-2 flex items-center gap-2">
+                                        <i class="fas fa-check-circle text-emerald-500"></i> Practice Tasks
+                                    </h4>
+                                    <div class="space-y-2">
+                                        ${conceptData.tasks.map(task => `
+                                            <label class="flex items-start gap-2">
+                                                <input type="checkbox" class="mt-1 text-sky-600 rounded border-stone-300">
+                                                <span class="text-sm text-stone-600 dark:text-stone-400">${task}</span>
+                                            </label>
+                                        `).join('')}
+                                    </div>
+                                </div>
+                                ` : ''}
+                            </div>
+
+                            <!-- Related Resources -->
+                            <div class="bg-white dark:bg-stone-900 p-6 rounded-xl border border-stone-200 dark:border-stone-800">
+                                <h3 class="text-lg font-bold text-stone-800 dark:text-stone-100 mb-4">Related Resources</h3>
+                                <div class="space-y-3">
+                                    <a href="https://kubernetes.io/docs/concepts/" target="_blank" 
+                                       class="flex items-center gap-3 p-3 rounded-lg hover:bg-stone-50 dark:hover:bg-stone-800 transition-colors group">
+                                        <div class="w-10 h-10 rounded-lg bg-sky-100 dark:bg-sky-900 flex items-center justify-center">
+                                            <i class="fas fa-book text-sky-600"></i>
+                                        </div>
+                                        <div>
+                                            <div class="font-medium text-stone-800 dark:text-stone-100 group-hover:text-sky-600">Official Docs</div>
+                                            <div class="text-xs text-stone-400">Kubernetes Concepts</div>
+                                        </div>
+                                    </a>
+                                    <a href="https://github.com/kubernetes/kubernetes" target="_blank" 
+                                       class="flex items-center gap-3 p-3 rounded-lg hover:bg-stone-50 dark:hover:bg-stone-800 transition-colors group">
+                                        <div class="w-10 h-10 rounded-lg bg-violet-100 dark:bg-violet-900 flex items-center justify-center">
+                                            <i class="fab fa-github text-violet-600"></i>
+                                        </div>
+                                        <div>
+                                            <div class="font-medium text-stone-800 dark:text-stone-100 group-hover:text-violet-600">Source Code</div>
+                                            <div class="text-xs text-stone-400">Kubernetes GitHub</div>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            updateNavProgress();
         }
 
-        function getCommandsHTML(data) {
-            return `
-                <div class="terminal-window p-4 sm:p-6 font-mono text-xs sm:text-sm overflow-x-auto">
-                    <div class="flex gap-2 mb-4">
-                        <div class="w-3 h-3 rounded-full bg-red-500"></div>
-                        <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
-                        <div class="w-3 h-3 rounded-full bg-green-500"></div>
+        function renderAIChat(conceptId) {
+            const conversations = currentState.aiConversations[conceptId] || [];
+            const aiData = aiKnowledgeBase[conceptId];
+            
+            let chatHTML = '';
+            
+            // Add initial greeting if no conversations
+            if (conversations.length === 0 && aiData?.explanations) {
+                const userLevel = currentState.userProfile.level;
+                const explanation = aiData.explanations.find(e => e.level === userLevel) || aiData.explanations[0];
+                
+                chatHTML += `
+                    <div class="ai-chat-bubble bg-sky-100 dark:bg-sky-900/30 p-4">
+                        <div class="flex items-center gap-2 mb-2">
+                            <div class="w-6 h-6 rounded-full bg-gradient-to-r from-sky-500 to-indigo-500 flex items-center justify-center">
+                                <i class="fas fa-robot text-white text-xs"></i>
+                            </div>
+                            <span class="font-medium text-sm text-stone-700 dark:text-stone-300">AI Assistant</span>
+                        </div>
+                        <p class="text-stone-700 dark:text-stone-300">${explanation.content}</p>
+                        <div class="mt-2 text-xs text-stone-500">Level: ${userLevel}</div>
                     </div>
-                    <div class="space-y-4">
-                        ${data.commands.map(c => `
-                            <div>
-                                <div class="text-stone-500 mb-1"># ${c.desc}</div>
-                                <div class="text-green-400 flex"><span class="mr-2">$</span><span>${c.cmd}</span></div>
-                            </div>`).join('')}
-                    </div>
-                </div>`;
+                `;
+            }
+            
+            // Render existing conversations
+            conversations.forEach(msg => {
+                if (msg.role === 'user') {
+                    chatHTML += `
+                        <div class="user-chat-bubble bg-stone-800 text-stone-100 dark:bg-stone-700 dark:text-stone-300 p-4">
+                            <div class="flex items-center gap-2 mb-2 justify-end">
+                                <span class="font-medium text-sm">You</span>
+                                <div class="w-6 h-6 rounded-full bg-stone-600 flex items-center justify-center">
+                                    <i class="fas fa-user text-white text-xs"></i>
+                                </div>
+                            </div>
+                            <p>${msg.content}</p>
+                        </div>
+                    `;
+                } else {
+                    chatHTML += `
+                        <div class="ai-chat-bubble bg-sky-100 dark:bg-sky-900/30 p-4">
+                            <div class="flex items-center gap-2 mb-2">
+                                <div class="w-6 h-6 rounded-full bg-gradient-to-r from-sky-500 to-indigo-500 flex items-center justify-center">
+                                    <i class="fas fa-robot text-white text-xs"></i>
+                                </div>
+                                <span class="font-medium text-sm text-stone-700 dark:text-stone-300">AI Assistant</span>
+                            </div>
+                            <p class="text-stone-700 dark:text-stone-300">${msg.content}</p>
+                        </div>
+                    `;
+                }
+            });
+            
+            return chatHTML;
         }
 
-        window.switchTab = function(tabName) {
-            document.querySelectorAll('button[id^="tab-"]').forEach(b => b.classList.remove('tab-active'));
-            document.getElementById(`tab-${tabName.replace(' ', '')}`).classList.add('tab-active');
-            const dayData = k8sData.find(d => d.day === currentState.activeDay);
-            const contentDiv = document.getElementById('tab-content');
-            if (tabName === 'Concepts') contentDiv.innerHTML = getConceptsHTML(dayData);
-            if (tabName === 'Tasks') contentDiv.innerHTML = getTasksHTML(dayData);
-            if (tabName === 'Lab Scenario') contentDiv.innerHTML = getLabHTML(dayData);
-            if (tabName === 'Commands') contentDiv.innerHTML = getCommandsHTML(dayData);
-        };
+        function sendAIQuestion(conceptId) {
+            const input = document.getElementById('ai-question-input');
+            const question = input.value.trim();
+            if (!question) return;
+            
+            // Add user message
+            if (!currentState.aiConversations[conceptId]) {
+                currentState.aiConversations[conceptId] = [];
+            }
+            currentState.aiConversations[conceptId].push({
+                role: 'user',
+                content: question,
+                timestamp: new Date().toISOString()
+            });
+            
+            // Clear input
+            input.value = '';
+            
+            // Generate AI response (simulated)
+            setTimeout(() => {
+                const aiResponse = generateAIResponse(conceptId, question);
+                currentState.aiConversations[conceptId].push({
+                    role: 'assistant',
+                    content: aiResponse,
+                    timestamp: new Date().toISOString()
+                });
+                
+                // Update chat display
+                const chatContainer = document.getElementById('ai-chat-container');
+                if (chatContainer) {
+                    chatContainer.innerHTML = renderAIChat(conceptId);
+                    chatContainer.scrollTop = chatContainer.scrollHeight;
+                }
+            }, 1000);
+            
+            // Update chat immediately
+            const chatContainer = document.getElementById('ai-chat-container');
+            if (chatContainer) {
+                chatContainer.innerHTML = renderAIChat(conceptId);
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            }
+        }
 
-        window.toggleComplete = function(dayId) {
-            currentState.completedDays.has(dayId) ? currentState.completedDays.delete(dayId) : currentState.completedDays.add(dayId);
+        function generateAIResponse(conceptId, question) {
+            const aiData = aiKnowledgeBase[conceptId];
+            const userLevel = currentState.userProfile.level;
+            
+            // Check for common questions
+            if (aiData?.commonQuestions) {
+                const lowerQuestion = question.toLowerCase();
+                for (const qa of aiData.commonQuestions) {
+                    if (lowerQuestion.includes(qa.q.toLowerCase().split(' ')[0])) {
+                        return qa.a;
+                    }
+                }
+            }
+            
+            // Check for real world scenarios
+            if (aiData?.realWorldScenarios && question.toLowerCase().includes('example')) {
+                const scenario = aiData.realWorldScenarios[0];
+                return `Here's a real-world example:\n\n**${scenario.title}**\n\nProblem: ${scenario.problem}\n\nSolution: ${scenario.solution}`;
+            }
+            
+            // Generate generic response based on level
+            const levelResponses = {
+                beginner: `In simple terms, this concept is about... Let me give you a practical example you can try.`,
+                intermediate: `From an intermediate perspective, this involves... Here are some best practices to follow.`,
+                advanced: `At an advanced level, this concept involves... Consider these optimization techniques.`
+            };
+            
+            return levelResponses[userLevel] || `I understand you're asking about "${question}". This is a key concept in Kubernetes that helps with...`;
+        }
+
+        function askAIQuestion(conceptId, question) {
+            const input = document.getElementById('ai-question-input');
+            input.value = question;
+            sendAIQuestion(conceptId);
+        }
+
+        function askAIAboutConcept(conceptId) {
+            renderConceptDetail(conceptId);
+            setTimeout(() => {
+                const question = `Explain ${conceptId} at ${currentState.userProfile.level} level`;
+                askAIQuestion(conceptId, question);
+            }, 500);
+        }
+
+        function renderAIAssistant() {
+            const app = document.getElementById('app-view');
+            app.innerHTML = `
+                <div class="animate-fade-in">
+                    <button onclick="renderDashboard()" class="text-sm text-stone-500 dark:text-stone-400 hover:text-stone-800 dark:hover:text-stone-200 mb-6 flex items-center gap-1">
+                        <i class="fas fa-arrow-left"></i> Back to Dashboard
+                    </button>
+                    
+                    <div class="flex flex-col lg:flex-row gap-8">
+                        <div class="lg:w-2/3">
+                            <div class="bg-gradient-to-r from-sky-500 to-indigo-500 rounded-2xl p-8 text-white mb-8">
+                                <div class="flex items-center gap-4 mb-6">
+                                    <div class="relative">
+                                        <div class="w-20 h-20 rounded-full bg-white/20 flex items-center justify-center">
+                                            <i class="fas fa-robot text-3xl"></i>
+                                        </div>
+                                        <div class="absolute -bottom-2 -right-2 w-10 h-10 bg-emerald-500 rounded-full flex items-center justify-center animate-pulse">
+                                            <i class="fas fa-bolt text-white"></i>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <h1 class="text-3xl font-bold">Kubernetes AI Assistant</h1>
+                                        <p class="opacity-90">Your personal guide to mastering Kubernetes concepts</p>
+                                    </div>
+                                </div>
+                                <p class="text-lg">Ask me anything about Kubernetes architecture, deployment strategies, troubleshooting, or best practices.</p>
+                            </div>
+                            
+                            <div class="bg-white dark:bg-stone-900 rounded-xl border border-stone-200 dark:border-stone-800 p-6 mb-8">
+                                <h2 class="text-xl font-bold text-stone-800 dark:text-stone-100 mb-4">Common Questions</h2>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <button onclick="askAIGeneral('How do I debug a CrashLoopBackOff?')" class="text-left p-4 rounded-lg border border-stone-200 dark:border-stone-800 hover:border-sky-500 hover:bg-sky-50 dark:hover:bg-sky-950/20 transition-colors">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-10 h-10 rounded-lg bg-red-100 dark:bg-red-900 flex items-center justify-center">
+                                                <i class="fas fa-bug text-red-600"></i>
+                                            </div>
+                                            <div>
+                                                <div class="font-medium text-stone-800 dark:text-stone-100">Debug CrashLoopBackOff</div>
+                                                <div class="text-sm text-stone-400">Troubleshooting guide</div>
+                                            </div>
+                                        </div>
+                                    </button>
+                                    <button onclick="askAIGeneral('Best practices for ConfigMaps vs Secrets')" class="text-left p-4 rounded-lg border border-stone-200 dark:border-stone-800 hover:border-sky-500 hover:bg-sky-50 dark:hover:bg-sky-950/20 transition-colors">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-10 h-10 rounded-lg bg-amber-100 dark:bg-amber-900 flex items-center justify-center">
+                                                <i class="fas fa-shield-alt text-amber-600"></i>
+                                            </div>
+                                            <div>
+                                                <div class="font-medium text-stone-800 dark:text-stone-100">ConfigMaps vs Secrets</div>
+                                                <div class="text-sm text-stone-400">Security best practices</div>
+                                            </div>
+                                        </div>
+                                    </button>
+                                    <button onclick="askAIGeneral('How to implement auto-scaling?')" class="text-left p-4 rounded-lg border border-stone-200 dark:border-stone-800 hover:border-sky-500 hover:bg-sky-50 dark:hover:bg-sky-950/20 transition-colors">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-10 h-10 rounded-lg bg-emerald-100 dark:bg-emerald-900 flex items-center justify-center">
+                                                <i class="fas fa-expand-arrows-alt text-emerald-600"></i>
+                                            </div>
+                                            <div>
+                                                <div class="font-medium text-stone-800 dark:text-stone-100">Auto-scaling Setup</div>
+                                                <div class="text-sm text-stone-400">Horizontal & vertical scaling</div>
+                                            </div>
+                                        </div>
+                                    </button>
+                                    <button onclick="askAIGeneral('Networking patterns in Kubernetes')" class="text-left p-4 rounded-lg border border-stone-200 dark:border-stone-800 hover:border-sky-500 hover:bg-sky-50 dark:hover:bg-sky-950/20 transition-colors">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-10 h-10 rounded-lg bg-violet-100 dark:bg-violet-900 flex items-center justify-center">
+                                                <i class="fas fa-network-wired text-violet-600"></i>
+                                            </div>
+                                            <div>
+                                                <div class="font-medium text-stone-800 dark:text-stone-100">Networking Patterns</div>
+                                                <div class="text-sm text-stone-400">Service mesh & ingress</div>
+                                            </div>
+                                        </div>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="lg:w-1/3">
+                            <div class="sticky top-24 space-y-6">
+                                <div class="bg-white dark:bg-stone-900 rounded-xl border border-stone-200 dark:border-stone-800 p-6">
+                                    <h3 class="text-lg font-bold text-stone-800 dark:text-stone-100 mb-4">Learning Settings</h3>
+                                    <div class="space-y-4">
+                                        <div>
+                                            <label class="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">Your Level</label>
+                                            <div class="flex gap-2">
+                                                ${['beginner', 'intermediate', 'advanced'].map(level => `
+                                                    <button onclick="setLearningLevel('${level}')" 
+                                                            class="flex-1 px-3 py-2 rounded text-sm font-medium ${currentState.userProfile.level === level ? 'bg-sky-600 text-white' : 'bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300'}">
+                                                        ${level.charAt(0).toUpperCase() + level.slice(1)}
+                                                    </button>
+                                                `).join('')}
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">Learning Style</label>
+                                            <div class="flex gap-2">
+                                                ${['hands-on', 'visual', 'theoretical'].map(style => `
+                                                    <button onclick="setLearningStyle('${style}')" 
+                                                            class="flex-1 px-3 py-2 rounded text-sm font-medium ${currentState.userProfile.learningStyle === style ? 'bg-emerald-600 text-white' : 'bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300'}">
+                                                        ${style.charAt(0).toUpperCase() + style.slice(1)}
+                                                    </button>
+                                                `).join('')}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="bg-gradient-to-b from-sky-50 to-white dark:from-sky-950/20 dark:to-stone-900 p-6 rounded-xl border border-sky-200 dark:border-sky-800">
+                                    <h3 class="text-lg font-bold text-stone-800 dark:text-stone-100 mb-4">Quick Ask</h3>
+                                    <div class="space-y-3">
+                                        <input type="text" id="general-ai-question" 
+                                               placeholder="Type your Kubernetes question..."
+                                               class="w-full px-4 py-2 rounded-lg border border-stone-300 dark:border-stone-700 bg-white dark:bg-stone-900 focus:outline-none focus:ring-2 focus:ring-sky-500">
+                                        <button onclick="askGeneralAI()" class="w-full py-2 bg-gradient-to-r from-sky-500 to-indigo-500 text-white rounded-lg font-medium hover:opacity-90 transition-opacity">
+                                            <i class="fas fa-paper-plane mr-2"></i> Ask AI
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function askAIGeneral(question) {
+            // For now, just show a placeholder response
+            alert(`AI Assistant: I'd be happy to help with "${question}". In the full implementation, this would connect to an AI API like OpenAI or a custom Kubernetes knowledge base.`);
+        }
+
+        function askGeneralAI() {
+            const input = document.getElementById('general-ai-question');
+            const question = input.value.trim();
+            if (question) {
+                askAIGeneral(question);
+                input.value = '';
+            }
+        }
+
+        function setLearningLevel(level) {
+            currentState.userProfile.level = level;
+            localStorage.setItem('k8sUserProfile', JSON.stringify(currentState.userProfile));
+            if (document.getElementById('app-view').innerHTML.includes('AI Assistant')) {
+                renderAIAssistant();
+            }
+        }
+
+        function setLearningStyle(style) {
+            currentState.userProfile.learningStyle = style;
+            localStorage.setItem('k8sUserProfile', JSON.stringify(currentState.userProfile));
+            if (document.getElementById('app-view').innerHTML.includes('AI Assistant')) {
+                renderAIAssistant();
+            }
+        }
+
+        function changeLearningLevel() {
+            const newLevel = prompt('Enter your learning level (beginner/intermediate/advanced):', currentState.userProfile.level);
+            if (newLevel && ['beginner', 'intermediate', 'advanced'].includes(newLevel)) {
+                setLearningLevel(newLevel);
+                renderDashboard();
+            }
+        }
+
+        function toggleComplete(dayId) {
+            if (currentState.completedDays.has(dayId)) {
+                currentState.completedDays.delete(dayId);
+            } else {
+                currentState.completedDays.add(dayId);
+            }
+            localStorage.setItem('k8sCompletedDays', JSON.stringify([...currentState.completedDays]));
             renderDay(dayId);
-        };
-
-        window.updateNavProgress = function() {
-             const display = document.getElementById('progress-display');
-             if(display) display.textContent = `Day ${currentState.activeDay || 0}/12`;
         }
 
+        function toggleConceptComplete(conceptId) {
+            if (currentState.completedConcepts.has(conceptId)) {
+                currentState.completedConcepts.delete(conceptId);
+            } else {
+                currentState.completedConcepts.add(conceptId);
+            }
+            localStorage.setItem('k8sCompletedConcepts', JSON.stringify([...currentState.completedConcepts]));
+            renderConceptDetail(conceptId);
+        }
+
+        function renderPracticeProblems(dayId = null) {
+            const app = document.getElementById('app-view');
+            app.innerHTML = `
+                <div class="animate-fade-in">
+                    <button onclick="${dayId ? `renderDay(${dayId})` : 'renderDashboard()'}" class="text-sm text-stone-500 dark:text-stone-400 hover:text-stone-800 dark:hover:text-stone-200 mb-6 flex items-center gap-1">
+                        <i class="fas fa-arrow-left"></i> Back
+                    </button>
+                    
+                    <h1 class="text-3xl font-bold text-stone-900 dark:text-stone-100 mb-2">Practice Problems</h1>
+                    <p class="text-stone-600 dark:text-stone-400 mb-8">Test your Kubernetes knowledge with real-world scenarios</p>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div class="bg-white dark:bg-stone-900 p-6 rounded-xl border border-stone-200 dark:border-stone-800">
+                            <h3 class="text-xl font-bold text-stone-800 dark:text-stone-100 mb-4 flex items-center gap-2">
+                                <i class="fas fa-code text-emerald-500"></i> Beginner Problems
+                            </h3>
+                            <div class="space-y-4">
+                                <div class="p-4 border-l-4 border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20">
+                                    <h4 class="font-bold text-stone-800 dark:text-stone-100">Problem 1: Pod Creation</h4>
+                                    <p class="text-stone-600 dark:text-stone-400 mt-1">Create a Pod running nginx:1.19 with resource limits of 256Mi memory and 0.5 CPU.</p>
+                                    <button onclick="showSolution('pod-creation')" class="text-sm text-emerald-600 hover:text-emerald-700 mt-2">View Solution</button>
+                                </div>
+                                <div class="p-4 border-l-4 border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20">
+                                    <h4 class="font-bold text-stone-800 dark:text-stone-100">Problem 2: Service Discovery</h4>
+                                    <p class="text-stone-600 dark:text-stone-400 mt-1">Create a Service that exposes your nginx Pod on port 80 and verify connectivity.</p>
+                                    <button onclick="showSolution('service-discovery')" class="text-sm text-emerald-600 hover:text-emerald-700 mt-2">View Solution</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white dark:bg-stone-900 p-6 rounded-xl border border-stone-200 dark:border-stone-800">
+                            <h3 class="text-xl font-bold text-stone-800 dark:text-stone-100 mb-4 flex items-center gap-2">
+                                <i class="fas fa-cogs text-amber-500"></i> Intermediate Problems
+                            </h3>
+                            <div class="space-y-4">
+                                <div class="p-4 border-l-4 border-amber-500 bg-amber-50 dark:bg-amber-900/20">
+                                    <h4 class="font-bold text-stone-800 dark:text-stone-100">Problem 3: Rolling Update</h4>
+                                    <p class="text-stone-600 dark:text-stone-400 mt-1">Perform a rolling update of a Deployment from nginx:1.19 to nginx:1.20 with zero downtime.</p>
+                                    <button onclick="showSolution('rolling-update')" class="text-sm text-amber-600 hover:text-amber-700 mt-2">View Solution</button>
+                                </div>
+                                <div class="p-4 border-l-4 border-amber-500 bg-amber-50 dark:bg-amber-900/20">
+                                    <h4 class="font-bold text-stone-800 dark:text-stone-100">Problem 4: ConfigMap Injection</h4>
+                                    <p class="text-stone-600 dark:text-stone-400 mt-1">Create a ConfigMap and inject it into a Pod as both environment variables and mounted files.</p>
+                                    <button onclick="showSolution('configmap-injection')" class="text-sm text-amber-600 hover:text-amber-700 mt-2">View Solution</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function showSolution(problemId) {
+            const solutions = {
+                'pod-creation': `apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-pod
+spec:
+  containers:
+  - name: nginx
+    image: nginx:1.19
+    resources:
+      requests:
+        memory: "256Mi"
+        cpu: "0.5"
+      limits:
+        memory: "256Mi"
+        cpu: "0.5"`,
+                'service-discovery': `apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-service
+spec:
+  selector:
+    app: nginx
+  ports:
+  - port: 80
+    targetPort: 80
+  type: ClusterIP`,
+                'rolling-update': `kubectl set image deployment/nginx-deployment nginx=nginx:1.20
+kubectl rollout status deployment/nginx-deployment`,
+                'configmap-injection': `apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+data:
+  APP_COLOR: blue
+  APP_MODE: production
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: config-pod
+spec:
+  containers:
+  - name: app
+    image: nginx
+    env:
+    - name: APP_COLOR
+      valueFrom:
+        configMapKeyRef:
+          name: app-config
+          key: APP_COLOR
+    volumeMounts:
+    - name: config-volume
+      mountPath: /etc/config
+  volumes:
+  - name: config-volume
+    configMap:
+      name: app-config`
+            };
+            
+            alert(`Solution for ${problemId}:\n\n${solutions[problemId] || 'Solution not available'}`);
+        }
+
+        function renderRealWorldScenarios(dayId = null) {
+            const app = document.getElementById('app-view');
+            app.innerHTML = `
+                <div class="animate-fade-in">
+                    <button onclick="${dayId ? `renderDay(${dayId})` : 'renderDashboard()'}" class="text-sm text-stone-500 dark:text-stone-400 hover:text-stone-800 dark:hover:text-stone-200 mb-6 flex items-center gap-1">
+                        <i class="fas fa-arrow-left"></i> Back
+                    </button>
+                    
+                    <h1 class="text-3xl font-bold text-stone-900 dark:text-stone-100 mb-2">Real World Scenarios</h1>
+                    <p class="text-stone-600 dark:text-stone-400 mb-8">Industry use cases and production patterns</p>
+                    
+                    <div class="space-y-6">
+                        <div class="bg-white dark:bg-stone-900 p-6 rounded-xl border border-stone-200 dark:border-stone-800">
+                            <div class="flex items-start gap-4">
+                                <div class="w-12 h-12 rounded-lg bg-blue-100 dark:bg-blue-900 flex items-center justify-center flex-shrink-0">
+                                    <i class="fas fa-shopping-cart text-blue-600 text-xl"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-xl font-bold text-stone-800 dark:text-stone-100 mb-2">E-commerce Platform</h3>
+                                    <p class="text-stone-600 dark:text-stone-400 mb-4">Scalable microservices architecture handling Black Friday traffic spikes</p>
+                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                        <div class="p-3 bg-stone-50 dark:bg-stone-800 rounded">
+                                            <div class="font-medium text-stone-800 dark:text-stone-100">Challenge</div>
+                                            <div class="text-sm text-stone-600 dark:text-stone-400">Handle 100x traffic increase during sales</div>
+                                        </div>
+                                        <div class="p-3 bg-stone-50 dark:bg-stone-800 rounded">
+                                            <div class="font-medium text-stone-800 dark:text-stone-100">Solution</div>
+                                            <div class="text-sm text-stone-600 dark:text-stone-400">HPA + Cluster Autoscaler + Readiness Probes</div>
+                                        </div>
+                                        <div class="p-3 bg-stone-50 dark:bg-stone-800 rounded">
+                                            <div class="font-medium text-stone-800 dark:text-stone-100">Tools</div>
+                                            <div class="text-sm text-stone-600 dark:text-stone-400">Prometheus, Keda, Istio</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white dark:bg-stone-900 p-6 rounded-xl border border-stone-200 dark:border-stone-800">
+                            <div class="flex items-start gap-4">
+                                <div class="w-12 h-12 rounded-lg bg-green-100 dark:bg-green-900 flex items-center justify-center flex-shrink-0">
+                                    <i class="fas fa-heartbeat text-green-600 text-xl"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-xl font-bold text-stone-800 dark:text-stone-100 mb-2">Healthcare Application</h3>
+                                    <p class="text-stone-600 dark:text-stone-400 mb-4">HIPAA-compliant patient data processing with high availability</p>
+                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                        <div class="p-3 bg-stone-50 dark:bg-stone-800 rounded">
+                                            <div class="font-medium text-stone-800 dark:text-stone-100">Challenge</div>
+                                            <div class="text-sm text-stone-600 dark:text-stone-400">Data encryption & compliance requirements</div>
+                                        </div>
+                                        <div class="p-3 bg-stone-50 dark:bg-stone-800 rounded">
+                                            <div class="font-medium text-stone-800 dark:text-stone-100">Solution</div>
+                                            <div class="text-sm text-stone-600 dark:text-stone-400">Encrypted PVCs + Network Policies + RBAC</div>
+                                        </div>
+                                        <div class="p-3 bg-stone-50 dark:bg-stone-800 rounded">
+                                            <div class="font-medium text-stone-800 dark:text-stone-100">Tools</div>
+                                            <div class="text-sm text-stone-600 dark:text-stone-400">Sealed Secrets, Cilium, OPA Gatekeeper</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderOpenSourceProjects(dayId = null) {
+            const app = document.getElementById('app-view');
+            app.innerHTML = `
+                <div class="animate-fade-in">
+                    <button onclick="${dayId ? `renderDay(${dayId})` : 'renderDashboard()'}" class="text-sm text-stone-500 dark:text-stone-400 hover:text-stone-800 dark:hover:text-stone-200 mb-6 flex items-center gap-1">
+                        <i class="fas fa-arrow-left"></i> Back
+                    </button>
+                    
+                    <h1 class="text-3xl font-bold text-stone-900 dark:text-stone-100 mb-2">Open Source Projects</h1>
+                    <p class="text-stone-600 dark:text-stone-400 mb-8">Contribute and learn from real Kubernetes ecosystem projects</p>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        ${[
+                            { name: "Kubernetes", stars: "98k", description: "Production-Grade Container Scheduling and Management", url: "https://github.com/kubernetes/kubernetes", difficulty: "Advanced" },
+                            { name: "Helm", stars: "24k", description: "The Kubernetes Package Manager", url: "https://github.com/helm/helm", difficulty: "Intermediate" },
+                            { name: "ArgoCD", stars: "13k", description: "Declarative GitOps CD for Kubernetes", url: "https://github.com/argoproj/argo-cd", difficulty: "Intermediate" },
+                            { name: "Prometheus", stars: "48k", description: "Monitoring & alerting toolkit", url: "https://github.com/prometheus/prometheus", difficulty: "Intermediate" },
+                            { name: "Fluentd", stars: "12k", description: "Unified Logging Layer", url: "https://github.com/fluent/fluentd", difficulty: "Beginner" },
+                            { name: "Cert Manager", stars: "10k", description: "Automated TLS certificate management", url: "https://github.com/cert-manager/cert-manager", difficulty: "Intermediate" }
+                        ].map(project => `
+                            <a href="${project.url}" target="_blank" class="block group">
+                                <div class="bg-white dark:bg-stone-900 p-6 rounded-xl border border-stone-200 dark:border-stone-800 hover:border-sky-500 dark:hover:border-sky-500 hover:shadow-lg transition-all h-full">
+                                    <div class="flex justify-between items-start mb-4">
+                                        <div class="w-12 h-12 rounded-lg bg-gradient-to-r from-sky-100 to-indigo-100 dark:from-sky-900 dark:to-indigo-900 flex items-center justify-center group-hover:scale-110 transition-transform">
+                                            <i class="fab fa-github text-xl text-stone-800 dark:text-stone-200"></i>
+                                        </div>
+                                        <span class="px-2 py-1 text-xs rounded-full ${project.difficulty === 'Beginner' ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-300' : project.difficulty === 'Intermediate' ? 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-300' : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'}">${project.difficulty}</span>
+                                    </div>
+                                    <h3 class="font-bold text-stone-800 dark:text-stone-100 mb-2 group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors">${project.name}</h3>
+                                    <p class="text-sm text-stone-600 dark:text-stone-400 mb-4">${project.description}</p>
+                                    <div class="flex items-center justify-between mt-4">
+                                        <div class="flex items-center gap-1 text-stone-500 text-sm">
+                                            <i class="fas fa-star"></i>
+                                            <span>${project.stars}</span>
+                                        </div>
+                                        <div class="text-sky-600 group-hover:text-sky-700 text-sm flex items-center gap-1">
+                                            <span>Explore</span>
+                                            <i class="fas fa-arrow-right"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        function updateNavProgress() {
+            const display = document.getElementById('progress-display');
+            if (display) {
+                if (currentState.activeDay) {
+                    display.textContent = `Day ${currentState.activeDay}/12`;
+                } else if (currentState.activeConcept) {
+                    display.textContent = `Concept Detail`;
+                } else {
+                    display.textContent = `Dashboard`;
+                }
+            }
+        }
+
+        // Load saved state
+        function loadSavedState() {
+            const savedDays = localStorage.getItem('k8sCompletedDays');
+            const savedConcepts = localStorage.getItem('k8sCompletedConcepts');
+            const savedProfile = localStorage.getItem('k8sUserProfile');
+            
+            if (savedDays) currentState.completedDays = new Set(JSON.parse(savedDays));
+            if (savedConcepts) currentState.completedConcepts = new Set(JSON.parse(savedConcepts));
+            if (savedProfile) currentState.userProfile = JSON.parse(savedProfile);
+        }
+
+        // Initialize
+        loadSavedState();
+        init();
+
+        // Export functions to window
         window.renderDashboard = renderDashboard;
         window.renderDay = renderDay;
-
-        init();
+        window.renderConceptDetail = renderConceptDetail;
+        window.renderAIAssistant = renderAIAssistant;
+        window.renderPracticeProblems = renderPracticeProblems;
+        window.renderRealWorldScenarios = renderRealWorldScenarios;
+        window.renderOpenSourceProjects = renderOpenSourceProjects;
+        window.toggleComplete = toggleComplete;
+        window.toggleConceptComplete = toggleConceptComplete;
+        window.askAIAboutConcept = askAIAboutConcept;
+        window.sendAIQuestion = sendAIQuestion;
+        window.askAIQuestion = askAIQuestion;
+        window.askAIGeneral = askAIGeneral;
+        window.askGeneralAI = askGeneralAI;
+        window.setLearningLevel = setLearningLevel;
+        window.setLearningStyle = setLearningStyle;
+        window.changeLearningLevel = changeLearningLevel;
+        window.showSolution = showSolution;
     </script>
 </body>
 </html>
