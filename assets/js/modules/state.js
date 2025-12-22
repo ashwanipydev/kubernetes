@@ -39,7 +39,13 @@ export const learningPath = [
         icon: "fa-network-wired",
         concepts: ["Kube-Proxy", "Endpoints", "CoreDNS", "Service Discovery"]
     },
-    { day: 6, title: "Namespaces & Resource Quotas", description: "Organizing clusters and limiting usage", icon: "fa-tags", concepts: ["Namespace Scoping", "Resource Quotas", "Limit Ranges"] },
+    { 
+        day: 6, 
+        title: "Namespaces & Resource Quotas", 
+        description: "Organizing clusters and limiting usage", 
+        icon: "fa-tags", 
+        concepts: ["Namespace Scoping", "Resource Quotas", "Limit Ranges"] 
+    },
     { day: 7, title: "ConfigMaps & Secrets", description: "Decoupling configuration and sensitive data", icon: "fa-user-shield", concepts: ["Environment Variables", "Volume Mounts", "Base64 Encoding"] },
     { day: 8, title: "Volumes & Persistence (PV/PVC)", description: "Storage classes and data persistence", icon: "fa-database", concepts: ["StorageClass", "Access Modes", "Reclaim Policy"] },
     { day: 9, title: "Ingress Controllers", description: "L7 Load Balancing and Path-based routing", icon: "fa-route", concepts: ["Ingress Rules", "TLS Termination", "Annotation Logic"] },
