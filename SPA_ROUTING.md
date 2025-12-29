@@ -1,6 +1,6 @@
 SPA History API Routing — Deployment Notes
 
-When using the History API for client-side navigation (clean URLs like /projects or /playground), the web server must be configured to serve the same `index.html` page for all routes handled by the SPA.
+When using the History API for client-side navigation (clean URLs like /projects), the web server must be configured to serve the same `index.html` page for all routes handled by the SPA.
 
 Why: When a user requests `/projects` directly, the server must return `index.html` so the client-side router can take over and render the correct view.
 

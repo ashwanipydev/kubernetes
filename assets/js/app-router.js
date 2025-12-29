@@ -1,12 +1,11 @@
 document.addEventListener('DOMContentLoaded', function () {
     // Wait until the window-render functions are available, then init the SPA router
     function ensureReady() {
-        if (window.SPARouter && window.renderHomeView && window.renderProjectsView && window.renderPlaygroundView) {
+        if (window.SPARouter && window.renderHomeView && window.renderProjectsView) {
             window.SPARouter.initRouter({
                 routes: {
                     '/': window.renderHomeView,
-                    '/projects': window.renderProjectsView,
-                    '/playground': window.renderPlaygroundView
+                    '/projects': window.renderProjectsView
                 },
                 fallback: window.renderHomeView
             });
