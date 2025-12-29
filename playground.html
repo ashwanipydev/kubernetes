@@ -18,8 +18,8 @@
     <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
       <a href="index.html" class="font-bold text-stone-800">DevOps Architect — Playground</a>
       <nav class="flex items-center gap-4">
-        <a href="index.html" class="text-sm text-stone-600">Home</a>
-        <a href="projects.html" class="text-sm text-stone-600">Projects</a>
+        <a href="/" class="text-sm text-stone-600">Home</a>
+        <a href="/projects" class="text-sm text-stone-600">Projects</a>
         <button id="themeToggle" class="ml-3 bg-stone-100 p-2 rounded-full text-stone-500" aria-label="Toggle theme">🌞</button>
       </nav>
     </div>
@@ -49,6 +49,43 @@ console.log('DOM safe to create elements in iframe via user script.');
         <iframe id="sandbox" sandbox="allow-scripts" style="width:100%; height:200px; border:1px solid #e6e6e6; margin-top:12px; border-radius:6px;"></iframe>
       </div>
     </div>
+
+    <!-- Docker Playground -->
+    <section class="mt-10 bg-white rounded-2xl p-6 shadow-sm">
+      <div class="flex justify-between items-start gap-4">
+        <div>
+          <h2 class="text-2xl font-bold mb-2">Docker Playground (Simulator)</h2>
+          <p class="text-stone-600 mb-4">Practice common Docker CLI commands in a lightweight simulator, or open an actual session on Play with Docker.</p>
+          <div class="flex gap-2 mb-4">
+            <a id="docker-pwd" href="https://labs.play-with-docker.com/" target="_blank" rel="noopener noreferrer" class="px-3 py-2 bg-orange-500 text-white rounded">Open Play with Docker</a>
+            <button id="docker-clear" class="px-3 py-2 bg-stone-100 rounded">Clear Terminal</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-4 grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="lg:col-span-2">
+          <div id="docker-output" class="terminal bg-black text-white p-4 rounded-md" style="min-height:200px; font-family: Menlo, Monaco, monospace; overflow:auto;"></div>
+          <div class="mt-3 flex gap-2">
+            <input id="docker-cmd" class="cmd-input flex-1 p-2 border rounded font-mono text-sm" placeholder="Type a command (try: docker images, docker pull nginx, docker run --name web1 nginx, docker ps)" />
+            <button id="docker-run" class="px-4 py-2 bg-orange-500 text-white rounded">Run</button>
+            <button id="docker-check" class="px-4 py-2 bg-stone-100 rounded">Check Tasks</button>
+          </div>
+        </div>
+
+        <div>
+          <h3 class="font-semibold mb-2">Tasks</h3>
+          <ol id="docker-tasks" class="text-sm text-stone-600 list-decimal pl-4 space-y-2">
+            <li>Pull the <code>nginx</code> image: <code>docker pull nginx</code></li>
+            <li>Run nginx named <code>web1</code>: <code>docker run --name web1 nginx</code></li>
+            <li>Stop <code>web1</code>: <code>docker stop web1</code></li>
+            <li>Remove <code>web1</code>: <code>docker rm web1</code></li>
+          </ol>
+          <p class="text-xs text-stone-400 mt-3">Tip: run <code>help</code> for a list of supported commands in this simulator.</p>
+        </div>
+      </div>
+    </section>
+
   </main>
 
   <footer class="bg-white border-t border-stone-200 py-8 mt-8 text-center text-stone-500 text-sm">
@@ -56,5 +93,7 @@ console.log('DOM safe to create elements in iframe via user script.');
   </footer>
 
   <script src="assets/js/playground.js" defer></script>
+  <script src="assets/js/docker-sim.js" defer></script>
+  <script src="assets/js/common-nav.js" defer></script>
 </body>
 </html>

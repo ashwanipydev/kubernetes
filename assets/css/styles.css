@@ -50,8 +50,54 @@ body { font-family: 'Inter', sans-serif; background-color: #FAFAF9; color: #1C19
 #themeToggle:hover { transform: scale(1.05); }
 
 /* Projects & Playground tweaks */
-#projects-grid .bg-stone-700 { min-height: 120px; }
+#projects-grid .bg-stone-700 { min-height: 140px; }
+/* Project card improvements */
+#projects-grid .project-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 150px;
+    background: linear-gradient(180deg, rgba(17,24,39,0.95), rgba(12,19,30,0.95));
+    border-radius: 12px;
+    padding: 18px;
+    box-shadow: 0 6px 18px rgba(2,6,23,0.35);
+    transition: transform .15s ease, box-shadow .15s ease;
+    border: 1px solid rgba(148,163,184,0.06);
+}
+#projects-grid .project-card:hover { transform: translateY(-6px); box-shadow: 0 18px 32px rgba(2,6,23,0.45); }
+#projects-grid .project-meta { display:flex; gap:8px; align-items:center; }
+#projects-grid .project-badge { background: rgba(255,255,255,0.05); color:#cbd5e1; font-size:12px; padding:6px 8px; border-radius:8px; }
+#projects-grid .repo-link { display:inline-flex; align-items:center; gap:8px; padding:8px 12px; background:#fff2e8; color:#7f1d1d; border-radius:8px; font-weight:600; text-decoration:none; font-size:13px; }
+#projects-grid .repo-link:hover { background:#ffd9b8; }
+#projects-grid .stack-tags { display:flex; gap:6px; flex-wrap:wrap; margin-top:8px; }
+#projects-grid .stack-tag { background: rgba(255,255,255,0.04); padding:6px 8px; border-radius:6px; color:#cbd5e1; font-size:12px; }
+
+/* Active nav link */
+header a.active { font-weight:700; color: #111827; border-bottom: 2px solid #fb923c; padding-bottom:4px; }
+
+/* Playground tweaks */
 .editor { box-shadow: 0 1px 0 rgba(0,0,0,0.02); }
 .output { border: 1px solid #E6E6E6; }
 .dark .output { background: #071026; color: #e6eef8; border-color: #1f2937 }
+
+/* Dark mode overrides for project cards */
+.dark #projects-grid .project-card { background: linear-gradient(180deg, #071026, #0b1220); border: 1px solid rgba(255,255,255,0.03); }
+.dark #projects-grid .repo-link { background: #2a2f34; color: #fb923c; }
+.dark #projects-grid .stack-tag { background: rgba(255,255,255,0.02); color: #9aa6b2; }
+
+/* Docker simulator / terminal */
+.terminal { border-radius: 8px; padding: 12px; font-family: Menlo, Monaco, monospace; font-size: 13px; line-height: 1.45; }
+.terminal .term-line { white-space: pre-wrap; margin-bottom: 6px; }
+.terminal .term-line.cmd { color: #f3f4f6; font-weight: 600; }
+.terminal .term-line.err { color: #fb7185; }
+.cmd-input { border: 1px solid #E6E6E6; }
+.dark .cmd-input { background: #071026; border-color: #1f2937; color: #e6eef8; }
+
+/* Steps panel and toggle */
+.project-steps { margin-top: 12px; border-top: 1px dashed rgba(255,255,255,0.04); padding-top: 12px; }
+.show-steps-btn { background: transparent; border: 1px solid rgba(255,255,255,0.06); padding: 8px 10px; border-radius: 8px; color: #f8fafc; font-weight:600; cursor:pointer; }
+.show-steps-btn:hover { transform: translateY(-1px); }
+.dark .show-steps-btn { background: rgba(255,255,255,0.02); border-color: rgba(255,255,255,0.04); color: #e6eef8; }
+
+
 
