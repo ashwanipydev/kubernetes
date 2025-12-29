@@ -303,6 +303,7 @@
                     });
                 }
 
+                // if we're on projects page this card might include a 'View Repo' anchor added later
                 dayContentArea.appendChild(card);
             });
         }
@@ -332,6 +333,10 @@
                                 </div>
                             </div>
                         `;
+                        // Add 'View Repo' button if a repo URL is available
+                        const repoUrl = window.PROJECT_REPOS && window.PROJECT_REPOS[day.day];
+                        const repoButton = repoUrl ? `<a href="${repoUrl}" target="_blank" rel="noopener noreferrer" class="inline-block mt-4 text-xs font-bold text-stone-900 bg-orange-200 px-3 py-1 rounded hover:bg-orange-300 transition">View Repo</a>` : '';
+                        pCard.innerHTML = pCard.innerHTML + repoButton;
                         projectGallery.appendChild(pCard);
                     }
                 });
@@ -393,6 +398,21 @@
                 progressBar.classList.replace('bg-orange-500', 'bg-green-500');
             }
         }
+
+        // Expose data globally for other pages
+        window.ROADMAP = roadmapData;
+        window.PROJECT_REPOS = {
+            7: 'https://github.com/ashwanipydev/server-health-monitor',
+            14: 'https://github.com/ashwanipydev/docker-voting-app',
+            21: 'https://github.com/ashwanipydev/ci-cd-demo',
+            28: 'https://github.com/ashwanipydev/k8s-migration',
+            35: 'https://github.com/ashwanipydev/k8s-helm-demo',
+            42: 'https://github.com/ashwanipydev/terraform-aws-webserver',
+            49: 'https://github.com/ashwanipydev/monitoring-demo',
+            54: 'https://github.com/ashwanipydev/capstone-infra',
+            55: 'https://github.com/ashwanipydev/capstone-cicd',
+            56: 'https://github.com/ashwanipydev/capstone-ops'
+        };
 
         // Start app
         init();

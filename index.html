@@ -36,7 +36,7 @@
                     <h1 class="text-2xl font-bold text-stone-800 tracking-tight">DevOps Architect <span class="text-orange-600">60-Day Path</span></h1>
                     <p class="text-sm text-stone-500 hidden sm:block">From Zero to Cloud-Native Engineer</p>
                 </div>
-                <div class="flex items-center gap-4 bg-stone-50 px-4 py-2 rounded-lg border border-stone-200">
+                <nav class="flex items-center gap-4 bg-stone-50 px-4 py-2 rounded-lg border border-stone-200">
                     <div class="text-right">
                         <p class="text-xs text-stone-500 uppercase font-semibold">Progress Simulation</p>
                         <p class="text-lg font-bold text-orange-600" id="progress-percent">0%</p>
@@ -44,8 +44,13 @@
                     <div class="w-32 h-2 bg-stone-200 rounded-full overflow-hidden">
                         <div id="progress-bar" class="h-full bg-orange-500 transition-all duration-500" style="width: 0%"></div>
                     </div>
-                    <button id="themeToggle" class="ml-3 bg-stone-100 p-2 rounded-full text-stone-500 hover:bg-stone-200 transition" aria-label="Toggle theme">🌞</button>
-                </div>
+                    <div class="ml-3 flex items-center gap-2">
+                        <a href="index.html" class="text-sm text-stone-600 hover:text-stone-800">Home</a>
+                        <a href="projects.html" class="text-sm text-stone-600 hover:text-stone-800">Projects</a>
+                        <a href="playground.html" class="text-sm text-stone-600 hover:text-stone-800">Playground</a>
+                        <button id="themeToggle" class="ml-3 bg-stone-100 p-2 rounded-full text-stone-500 hover:bg-stone-200 transition" aria-label="Toggle theme">🌞</button>
+                    </div>
+                </nav>
             </div>
         </div>
     </header>

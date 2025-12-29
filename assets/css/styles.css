@@ -48,3 +48,10 @@ body { font-family: 'Inter', sans-serif; background-color: #FAFAF9; color: #1C19
 .dark .bg-orange-500 { background-color: #fb923c !important; }
 #themeToggle { transition: background-color .2s, color .2s, transform .12s; }
 #themeToggle:hover { transform: scale(1.05); }
+
+/* Projects & Playground tweaks */
+#projects-grid .bg-stone-700 { min-height: 120px; }
+.editor { box-shadow: 0 1px 0 rgba(0,0,0,0.02); }
+.output { border: 1px solid #E6E6E6; }
+.dark .output { background: #071026; color: #e6eef8; border-color: #1f2937 }
+
