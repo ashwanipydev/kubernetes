@@ -140,6 +140,7 @@
 
         // --- INITIALIZATION ---
         function init() {
+            initTheme();
             renderCharts();
             renderPhaseNav();
             renderDays(activePhaseId);
@@ -335,6 +336,35 @@
                     }
                 });
             });
+        }
+
+        // Theme / Dark mode helpers
+        function applyTheme(theme) {
+            if (theme === 'dark') document.documentElement.classList.add('dark');
+            else document.documentElement.classList.remove('dark');
+            updateToggleIcon();
+        }
+
+        function updateToggleIcon() {
+            const btn = document.getElementById('themeToggle');
+            if (!btn) return;
+            btn.textContent = document.documentElement.classList.contains('dark') ? '🌙' : '🌞';
+            btn.setAttribute('aria-pressed', document.documentElement.classList.contains('dark') ? 'true' : 'false');
+        }
+
+        function toggleTheme() {
+            const isDark = document.documentElement.classList.toggle('dark');
+            localStorage.setItem('k8sTheme', isDark ? 'dark' : 'light');
+            updateToggleIcon();
+        }
+
+        function initTheme() {
+            const saved = localStorage.getItem('k8sTheme');
+            if (saved) applyTheme(saved);
+            else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) applyTheme('dark');
+            const btn = document.getElementById('themeToggle');
+            if (btn) btn.addEventListener('click', toggleTheme);
+            updateToggleIcon();
         }
 
         // --- INTERACTION ---

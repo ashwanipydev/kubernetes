@@ -29,3 +29,22 @@ body { font-family: 'Inter', sans-serif; background-color: #FAFAF9; color: #1C19
 
 .active-tab { background-color: #E7E5E4; border-left: 4px solid #EA580C; font-weight: 600; }
 .tab-item:hover { background-color: #F5F5F4; }
+
+/* Dark mode overrides */
+:root { --bg-dark: #0b1220; --panel-dark: #071026; --muted-dark: #9aa6b2; --card-dark: #0f1724; --accent: #fb923c; }
+.dark body { background-color: var(--bg-dark); color: #e6eef8; }
+.dark header { background-color: #020617; border-color: #1f2937; }
+.dark .bg-white { background-color: var(--panel-dark) !important; }
+.dark .text-stone-800 { color: #e6eef8 !important; }
+.dark .text-stone-500 { color: #94a3b8 !important; }
+.dark .bg-stone-50 { background-color: #071026 !important; }
+.dark .border-stone-200 { border-color: #1f2937 !important; }
+.dark .bg-stone-700 { background-color: #0f1724 !important; }
+.dark .text-stone-50 { color: #e6eef8 !important; }
+.dark .bg-orange-50 { background-color: rgba(249, 115, 22, 0.06) !important; }
+.dark .text-orange-600 { color: #fb923c !important; }
+.dark .bg-stone-100 { background-color: #071026 !important; color:#cbd5e1 !important; }
+.dark .bg-emerald-100 { background-color: #052e17 !important; color: #bbf7d0 !important; }
+.dark .bg-orange-500 { background-color: #fb923c !important; }
+#themeToggle { transition: background-color .2s, color .2s, transform .12s; }
+#themeToggle:hover { transform: scale(1.05); }
