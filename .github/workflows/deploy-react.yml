@@ -1,5 +1,10 @@
 name: Build and deploy React app to GitHub Pages
 
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
 on:
   push:
     branches: [ main ]
@@ -27,8 +32,15 @@ jobs:
           cd react-app
           npm run build
 
+      - name: Debug build output
+        run: |
+          echo "Build directory listing:"
+          ls -la react-app/build || true
+          pwd
+
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./react-app/build
+          publish_dir: react-app/build
+          publish_branch: gh-pages
