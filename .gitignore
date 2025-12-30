@@ -1,7 +1,0 @@
-/node_modules
-/react-app/node_modules
-/.cache
-/.DS_Store
-/dist
-/build
-.env
