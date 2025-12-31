@@ -36,6 +36,7 @@
 
 ## 📋 Table of Contents
 
+- [Quick Navigation](#-quick-navigation)
 - [Introduction](#-introduction)
 - [Who Is This For](#-who-is-this-for)
 - [Learning Outcomes](#-learning-outcomes)
@@ -49,6 +50,37 @@
 - [Setup Guide](#-setup-guide)
 - [Contribution Guidelines](#-contribution-guidelines)
 - [License](#-license)
+
+---
+
+## 🚀 Quick Navigation
+
+**Click any day to jump directly to that lesson:**
+
+| Week 1: Foundations | Week 2: Core Objects | Week 3: Config & Storage |
+|:-------------------:|:--------------------:|:------------------------:|
+| [Day 01](./Day-01/day-01.md) | [Day 08](./Day-08/day-08.md) | [Day 15](./Day-15/day-15.md) |
+| [Day 02](./Day-02/day-02.md) | [Day 09](./Day-09/day-09.md) | [Day 16](./Day-16/day-16.md) |
+| [Day 03](./Day-03/day-03.md) | [Day 10](./Day-10/day-10.md) | [Day 17](./Day-17/day-17.md) |
+| [Day 04](./Day-04/day-04.md) | [Day 11](./Day-11/day-11.md) | [Day 18](./Day-18/day-18.md) |
+| [Day 05](./Day-05/day-05.md) | [Day 12](./Day-12/day-12.md) | [Day 19](./Day-19/day-19.md) |
+| [Day 06](./Day-06/day-06.md) | [Day 13](./Day-13/day-13.md) | [Day 20](./Day-20/day-20.md) |
+| [Day 07](./Day-07/day-07.md) 🏗️ | [Day 14](./Day-14/day-14.md) 🏗️ | [Day 21](./Day-21/day-21.md) 🏗️ |
+
+| Week 4: Resources & Updates | Week 5: Networking & Security | Week 6: Production |
+|:---------------------------:|:-----------------------------:|:------------------:|
+| [Day 22](./Day-22/day-22.md) | [Day 29](./Day-29/day-29.md) | [Day 36](./Day-36/day-36.md) |
+| [Day 23](./Day-23/day-23.md) | [Day 30](./Day-30/day-30.md) | [Day 37](./Day-37/day-37.md) |
+| [Day 24](./Day-24/day-24.md) | [Day 31](./Day-31/day-31.md) | [Day 38](./Day-38/day-38.md) |
+| [Day 25](./Day-25/day-25.md) | [Day 32](./Day-32/day-32.md) | [Day 39](./Day-39/day-39.md) |
+| [Day 26](./Day-26/day-26.md) | [Day 33](./Day-33/day-33.md) | [Day 40](./Day-40/day-40.md) |
+| [Day 27](./Day-27/day-27.md) | [Day 34](./Day-34/day-34.md) | [Day 41](./Day-41/day-41.md) |
+| [Day 28](./Day-28/day-28.md) 🏗️ | [Day 35](./Day-35/day-35.md) 🏗️ | [Day 42](./Day-42/day-42.md) |
+|  |  | [Day 43](./Day-43/day-43.md) |
+|  |  | [Day 44](./Day-44/day-44.md) |
+|  |  | [Day 45](./Day-45/day-45.md) 🎓 |
+
+> 🏗️ = Weekly Project Day | 🎓 = Final Project & Conclusion
 
 ---
 
