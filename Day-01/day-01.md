@@ -108,19 +108,19 @@ Containers leverage Linux kernel features:
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                    CONTAINER ISOLATION                       │
+│                    CONTAINER ISOLATION                      │
 ├─────────────────────────────────────────────────────────────┤
-│                                                              │
-│  Namespaces (Isolation)          cgroups (Resource Limits)   │
-│  ┌─────────────────────┐         ┌─────────────────────┐     │
-│  │ • PID namespace     │         │ • CPU limits        │     │
-│  │ • Network namespace │         │ • Memory limits     │     │
-│  │ • Mount namespace   │         │ • I/O limits        │     │
-│  │ • User namespace    │         │ • Process limits    │     │
-│  │ • UTS namespace     │         │                     │     │
-│  │ • IPC namespace     │         │                     │     │
-│  └─────────────────────┘         └─────────────────────┘     │
-│                                                              │
+│                                                             │
+│  Namespaces (Isolation)          cgroups (Resource Limits)  │
+│  ┌─────────────────────┐         ┌─────────────────────┐    │
+│  │ • PID namespace     │         │ • CPU limits        │    │
+│  │ • Network namespace │         │ • Memory limits     │    │
+│  │ • Mount namespace   │         │ • I/O limits        │    │
+│  │ • User namespace    │         │ • Process limits    │    │
+│  │ • UTS namespace     │         │                     │    │
+│  │ • IPC namespace     │         │                     │    │
+│  └─────────────────────┘         └─────────────────────┘    │
+│                                                             │
 └─────────────────────────────────────────────────────────────┘
 ```
 
