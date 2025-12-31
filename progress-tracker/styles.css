@@ -1,0 +1,9 @@
+:root{--bg:#ffffff;--fg:#111827;--accent:#0ea5e9}
+[data-theme='dark']{--bg:#0b1220;--fg:#e6eef8;--accent:#38bdf8}
+body{margin:0;font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--fg)}
+.app{max-width:900px;margin:2rem auto;padding:1rem}
+header{display:flex;justify-content:space-between;align-items:center}
+.day-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px;margin-top:1rem}
+.day{padding:8px;border-radius:6px;border:1px solid rgba(0,0,0,0.08);display:flex;justify-content:space-between}
+.completed{background:linear-gradient(90deg,var(--accent),#60a5fa33)}
+footer{margin-top:1rem}
