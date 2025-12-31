@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./images/icons8-kubernetes-240.png.png" alt="Kubernetes Logo" width="240"/>
+  <img src="./images/icons8-kubernetes-240.png" alt="Kubernetes Logo" width="240"/>
 </p>
 
 <h1 align="center">45 Days of Kubernetes</h1>
